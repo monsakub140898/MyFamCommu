@@ -530,12 +530,12 @@ with tab2:
             <div style='background: #FFFFFF; border: 2px solid #FFB7B2; padding: 18px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 8px 20px rgba(255, 183, 178, 0.25);'>
                 <div style='font-size: 1.05rem; font-weight: 700; color: #8D2B44; margin-bottom: 10px; text-align: center; border-bottom: 1px solid #FFE4E6; padding-bottom: 8px;'>📋 ข้อมูลสมาชิกใหม่</div>
                 <div style='font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 6px;'>
-                    <div><b>ชื่อ:</b> {pm['name']}</div>
-                    <div><b>ประเภท:</b> {pm['type']} ({pm['species']})</div>
-                    <div><b>เพศ:</b> {pm['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {pm['gen_level']}</div>
-                    <div><b>วันเกิด:</b> {pm['birth_date'] if pm['birth_date'] else '-'}</div>
-                    <div><b>พ่อ / แม่:</b> {pm['father'] if pm['father'] else '-'} / {pm['mother'] if pm['mother'] else '-'}</div>
-                    <div><b>บันทึกเพิ่มเติม:</b> {pm['notes'] if pm['notes'] else '-'}</div>
+                    <div><b>ชื่อ :</b> {pm['name']}</div>
+                    <div><b>ประเภท :</b> {pm['type']} ({pm['species']})</div>
+                    <div><b>เพศ :</b> {pm['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {pm['gen_level']}</div>
+                    <div><b>วันเกิด :</b> {pm['birth_date'] if pm['birth_date'] else '-'}</div>
+                    <div><b>พ่อ / แม่ :</b> {pm['father'] if pm['father'] else '-'} / {pm['mother'] if pm['mother'] else '-'}</div>
+                    <div><b>บันทึกเพิ่มเติม :</b> {pm['notes'] if pm['notes'] else '-'}</div>
                 </div>
             </div>
             """,
