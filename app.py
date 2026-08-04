@@ -349,7 +349,7 @@ with tab2:
         with col_m:
             mother = st.selectbox(f"เลือกแม่ (จาก Gen {parent_target_gen})" if gen_level > 0 else "เลือกแม่", mother_options)
             
-        notes = st.text_area("บันทึกเพิ่มเติม / พัฒนาการ", placeholder="ใส่บันทึกย่อหรือลักษณะเด่น...")
+        notes = st.text_area("บันทึกเพิ่มเติม", placeholder="ใส่บันทึกย่อหรือลักษณะเด่น...")
         uploaded_file = st.file_uploader("📸 รูปถ่ายสมาชิก", type=["jpg", "png", "jpeg"])
         
         submitted = st.form_submit_button("บันทึกข้อมูล", use_container_width=True)
