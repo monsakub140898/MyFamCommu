@@ -110,8 +110,8 @@ st.markdown("""
 
     div[data-testid="stTabs"] button[data-baseweb="tab"] {
         border-radius: 14px !important;
-        padding: 8px 18px !important;
-        font-size: 0.92rem !important;
+        padding: 6px 14px !important;
+        font-size: 0.88rem !important;
         font-weight: 600 !important;
         color: #7A6F64 !important;
         border: none !important;
@@ -122,14 +122,14 @@ st.markdown("""
     div[data-testid="stTabs"] button[data-baseweb="tab"]:hover {
         color: #E11D48 !important;
         background: rgba(255, 255, 255, 0.7) !important;
-        transform: translateY(-2px) scale(1.02) !important;
+        transform: translateY(-1px) scale(1.01) !important;
     }
 
     div[data-testid="stTabs"] button[aria-selected="true"] {
         background: linear-gradient(135deg, #FFB7B2 0%, #FFDAC1 100%) !important;
         color: #8D2B44 !important;
-        box-shadow: 0 4px 14px rgba(255, 154, 162, 0.45) !important;
-        transform: translateY(-1px) !important;
+        box-shadow: 0 3px 10px rgba(255, 154, 162, 0.35) !important;
+        transform: translateY(0px) !important;
     }
 
     div[data-testid="stTabs"] [data-baseweb="tab-highlight-title"],
@@ -138,7 +138,7 @@ st.markdown("""
     }
 
     /* =========================================================
-       2. Radio Segmented Control (พาสเทลน่ารัก + ซ่อนจุดสนิท)
+       2. Radio Segmented Control
        ========================================================= */
     div[data-testid="stRadio"] > div[role="radiogroup"] {
         display: flex !important;
@@ -147,7 +147,7 @@ st.markdown("""
         gap: 4px !important;
         background-color: #FFF0F3 !important;
         padding: 4px !important;
-        border-radius: 16px !important;
+        border-radius: 14px !important;
         border: 1px solid #FFE2E7 !important;
     }
 
@@ -162,8 +162,8 @@ st.markdown("""
         justify-content: center !important;
         align-items: center !important;
         background: transparent !important;
-        padding: 6px 12px !important;
-        border-radius: 12px !important;
+        padding: 4px 10px !important;
+        border-radius: 10px !important;
         transition: all 0.25s ease !important;
         cursor: pointer !important;
         border: none !important;
@@ -172,14 +172,14 @@ st.markdown("""
 
     div[data-testid="stRadio"] label [data-testid="stMarkdownContainer"] p {
         white-space: nowrap !important;
-        font-size: 0.88rem !important;
+        font-size: 0.85rem !important;
         font-weight: 600 !important;
         color: #A08C82 !important;
     }
 
     div[data-testid="stRadio"] label[data-checked="true"] {
         background: #FFFFFF !important;
-        box-shadow: 0 3px 10px rgba(255, 154, 162, 0.35) !important;
+        box-shadow: 0 2px 6px rgba(255, 154, 162, 0.25) !important;
     }
 
     div[data-testid="stRadio"] label[data-checked="true"] [data-testid="stMarkdownContainer"] p {
@@ -188,62 +188,65 @@ st.markdown("""
     }
 
     /* =========================================================
-       3. Generation Stepper (แยกปุ่ม + / - ออกมาอยู่นอกกรอบข้อความ)
+       3. Generation Stepper & General Buttons (ปรับขนาดให้เล็กลง)
        ========================================================= */
-    /* ซ่อนปุ่ม +/- ดั้งเดิมที่ซ้อนอยู่ข้างใน number_input */
     div[data-testid="stNumberInput"] button {
         display: none !important;
     }
 
-    /* ตกแต่งกรอบตัวเลขตรงกลางให้อยู่สัดส่วนสวยงาม */
     div[data-testid="stNumberInput"] input {
         text-align: center !important;
         font-weight: 700 !important;
-        font-size: 1rem !important;
+        font-size: 0.9rem !important;
         color: #4A443F !important;
         background-color: #F8F6F0 !important;
-        border-radius: 14px !important;
+        border-radius: 10px !important;
         border: 1px solid #EADBCE !important;
+        padding: 0.25rem 0.5rem !important;
+        min-height: 38px !important;
     }
 
-    /* ตกแต่งปุ่ม + และ - นอกกรอบให้แยกเป็นปุ่มทรงแคปซูล/สี่เหลี่ยมมน */
+    /* ปุ่มปรับจำนวน + / - */
     div[data-testid="stColumn"] button[kind="secondary"] {
         background-color: #FFF0F3 !important;
         color: #FF5E7E !important;
         border: 1px solid #FFE2E7 !important;
-        border-radius: 12px !important;
-        font-weight: 700 !important;
-        font-size: 1.1rem !important;
-        box-shadow: 0 2px 6px rgba(255, 154, 162, 0.15) !important;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+        padding: 0.25rem 0.5rem !important;
+        min-height: 38px !important;
+        box-shadow: 0 2px 4px rgba(255, 154, 162, 0.1) !important;
         transition: all 0.2s ease !important;
     }
 
     div[data-testid="stColumn"] button[kind="secondary"]:hover {
         background-color: #FFDDE2 !important;
         transform: translateY(-1px) !important;
-        box-shadow: 0 4px 10px rgba(255, 154, 162, 0.25) !important;
+        box-shadow: 0 3px 8px rgba(255, 154, 162, 0.2) !important;
     }
 
     /* =========================================================
-       4. Main Submit Form Button
+       4. Main Submit Form Button (ปรับขนาดลงให้กะทัดรัดเหมือนเดิม)
        ========================================================= */
     div[data-testid="stFormSubmitButton"] > button {
         background: linear-gradient(135deg, #FFB7B2 0%, #FF9AA2 100%) !important;
         color: #FFFFFF !important;
         border: none !important;
-        border-radius: 16px !important;
-        font-weight: 700 !important;
-        font-size: 0.98rem !important;
-        padding: 0.75rem 1.2rem !important;
-        box-shadow: 0 6px 18px rgba(255, 154, 162, 0.4) !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
+        padding: 0.5rem 1rem !important;
+        min-height: 40px !important;
+        box-shadow: 0 4px 12px rgba(255, 154, 162, 0.3) !important;
         transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
         cursor: pointer !important;
     }
 
     div[data-testid="stFormSubmitButton"] > button:hover {
         background: linear-gradient(135deg, #FF9AA2 0%, #FF8B94 100%) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 22px rgba(255, 139, 148, 0.5) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 16px rgba(255, 139, 148, 0.4) !important;
     }
 
     /* =========================================================
@@ -391,7 +394,7 @@ def render_member_dialog(m):
                             st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้: {img_err}")
                     
                     supabase.table("members").delete().eq("id", m["id"]).execute()
-                    st.success(f"ลบ {m['name']} เรียบร้อยแล้วครับ")
+                    st.success(f"ลบ {m['name']} เรียบร้อยแล้ว)
                     st.query_params.clear()
                     st.rerun()
                 except Exception as e:
@@ -474,7 +477,7 @@ with tab2:
     
     with col_type:
         st.markdown("<div class='input-label'>ประเภทสมาชิก</div>", unsafe_allow_html=True)
-        member_type = st.radio( ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
+        member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
         
     with col_gen:
         st.markdown("<div class='input-label'>Generation</div>", unsafe_allow_html=True)
