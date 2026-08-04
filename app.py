@@ -209,25 +209,25 @@ st.markdown("""
         border-color: #B2C8C3 !important;
     }
 
-    /* ปุ่มแก้ไขข้อมูล -> สีฟ้าพาสเทลละมุนสวยงาม (Soft Sky Blue) และขนาดเท่ากันเป๊ะ */
+    /* ปุ่มแก้ไขข้อมูล -> สี #7EF1FC ตามที่ต้องการ */
     div.pastel-blue-btn button {
-        background: linear-gradient(135deg, #E1F5FE 0%, #B3E5FC 100%) !important;
-        color: #0277BD !important;
-        border: 1.5px solid #81D4FA !important;
+        background: linear-gradient(135deg, #7EF1FC 0%, #5CE1FE 100%) !important;
+        color: #004D61 !important;
+        border: 1.5px solid #38BDF8 !important;
         border-radius: 14px !important;
         font-weight: 600 !important;
         font-size: 0.9rem !important;
         padding: 0.5rem 0.8rem !important;
         min-height: 44px !important;
         width: 100% !important;
-        box-shadow: 0 4px 12px rgba(179, 229, 252, 0.4) !important;
+        box-shadow: 0 4px 12px rgba(126, 241, 252, 0.4) !important;
         transition: all 0.25s ease !important;
     }
 
     div.pastel-blue-btn button:hover {
-        background: linear-gradient(135deg, #B3E5FC 0%, #4FC3F7 100%) !important;
-        color: #01579B !important;
-        border-color: #4FC3F7 !important;
+        background: linear-gradient(135deg, #5CE1FE 0%, #38BDF8 100%) !important;
+        color: #003340 !important;
+        border-color: #0284C7 !important;
         transform: translateY(-1px) !important;
     }
 
