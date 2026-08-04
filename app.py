@@ -85,8 +85,14 @@ st.markdown("""
     }
 
     /* =========================================================
-       1. แท็บเมนู (Tabs Navigation)
+       1. แท็บเมนู (Tabs Navigation - จัดให้อยู่ตรงกลาง)
        ========================================================= */
+    div[data-testid="stTabs"] {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     div[data-testid="stTabs"] [data-baseweb="tab-list"] {
         gap: 8px !important;
         background-color: #F5EFE6 !important;
@@ -94,6 +100,8 @@ st.markdown("""
         border-radius: 20px !important;
         border: 1px solid #EADBCE !important;
         box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03) !important;
+        margin: 0 auto !important;
+        width: fit-content !important;
     }
 
     div[data-testid="stTabs"] button[data-baseweb="tab"] {
@@ -176,7 +184,7 @@ st.markdown("""
     }
 
     /* =========================================================
-       3. Main Submit Form Button (ปรับให้สีเข้มและเด่นชัดขึ้น)
+       3. Main Submit Form Button
        ========================================================= */
     div[data-testid="stFormSubmitButton"] > button {
         background: linear-gradient(135deg, #FF5E7E 0%, #FF3366 100%) !important;
@@ -319,7 +327,6 @@ def render_member_dialog(m):
         
         st.markdown(f"### {m['name']}")
         
-        # จัดการการแสดงผลประเภท ไม่ให้แสดงชื่อซ้ำซ้อนกัน (เช่น คน (คน))
         if m.get('type') == 'คน':
             type_display = 'คน'
         else:
