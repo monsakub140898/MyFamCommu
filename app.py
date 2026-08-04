@@ -189,7 +189,7 @@ st.markdown("""
         width: 100% !important;
     }
 
-    /* ปุ่มรอง / ปุ่มยกเลิก / ปิด (Secondary) -> สีเขียวพาสเทลละมุน (Soft Sage Green) */
+    /* ปุ่มรอง / ปุ่มยกเลิก (Secondary) -> สีเขียวพาสเทลละมุน (Soft Sage Green) */
     div.stButton > button:not([kind="primary"]) {
         background: linear-gradient(135deg, #E2ECE9 0%, #D4E2DE) !important;
         color: #3D5A5B !important;
@@ -207,23 +207,43 @@ st.markdown("""
         border-color: #B2C8C3 !important;
     }
 
-    /* ปุ่มหลัก / ปุ่มยืนยัน / ลบข้อมูล (Primary) -> สีแดงเข้มเด่นชัด (Crimson Red) ตัวหนังสือสีขาว */
+    /* ปุ่มแก้ไขข้อมูล -> สีฟ้าอ่อนพาสเทล (Pastel Light Blue) */
+    .pastel-blue-btn button {
+        background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%) !important;
+        color: #0369A1 !important;
+        border: 1px solid #7DD3FC !important;
+        border-radius: 14px !important;
+        font-weight: 600 !important;
+        padding: 0.5rem 1rem !important;
+        min-height: 42px !important;
+        box-shadow: 0 4px 12px rgba(186, 230, 253, 0.4) !important;
+        transition: all 0.25s ease !important;
+    }
+
+    .pastel-blue-btn button:hover {
+        background: linear-gradient(135deg, #BAE6FD 0%, #7DD3FC 100%) !important;
+        color: #0284C7 !important;
+        border-color: #38BDF8 !important;
+        transform: translateY(-1px) !important;
+    }
+
+    /* ปุ่มหลัก / ปุ่มยืนยัน / ลบข้อมูล (Primary) -> สีชมพูพีช-แดงละมุน */
     div.stButton > button[kind="primary"] {
-        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+        background: linear-gradient(135deg, #FF5E7E 0%, #FF3366 100%) !important;
         color: #FFFFFF !important;
         border: none !important;
         border-radius: 14px !important;
         font-weight: 600 !important;
         padding: 0.5rem 1rem !important;
         min-height: 42px !important;
-        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;
+        box-shadow: 0 4px 12px rgba(255, 94, 126, 0.3) !important;
         transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }
 
     div.stButton > button[kind="primary"]:hover {
-        background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%) !important;
+        background: linear-gradient(135deg, #FF3366 0%, #E11D48 100%) !important;
         transform: translateY(-1px) !important;
-        box-shadow: 0 6px 16px rgba(185, 28, 28, 0.4) !important;
+        box-shadow: 0 6px 16px rgba(225, 29, 72, 0.4) !important;
     }
 
     div[data-testid="stFormSubmitButton"] {
@@ -365,62 +385,186 @@ def fetch_members():
         response = supabase.table("members").select("*").order("gen_level", desc=False).execute()
         return response.data
     except Exception as e:
-        st.error(f"ไม่สามารถเชื่อมต่อฐานข้อมูลได้: {e}")
+        st.error(f"ไม่สามารถเชื่อมต่อฐานข้อมูลได้ : {e}")
         return []
 
 # ---------------------------------------------------------
-# 5. Dialog Function for Member Details Modal with Delete Confirmation
+# 5. Dialog Function for Member Details Modal with Edit, Edit Confirmation & Delete
 # ---------------------------------------------------------
 def render_member_dialog(m):
     @st.dialog("รายละเอียดสมาชิก")
     def show_modal():
-        if m.get('image_url'):
-            st.markdown(
-                f'<div style="display: flex; justify-content: center; background: #FAF7F2; border-radius: 18px; overflow: hidden; margin-bottom: 12px; border: 1px solid #EADBCE;">'
-                f'<img src="{m["image_url"]}" style="width: 100%; height: auto; display: block; object-fit: contain;">'
-                f'</div>',
-                unsafe_allow_html=True
-            )
-        
-        if m.get('type') == 'คน':
-            type_display = 'คน'
-        else:
-            type_display = f"{m.get('type')} ({m.get('species', '-')})"
-            
-        birth_date_html = f"<div><b>วันเกิด :</b> {m['birth_date']}</div>" if m.get('birth_date') else ""
-        parents_html = f"<div><b>พ่อ / แม่ :</b> {m.get('father', '-')} / {m.get('mother', '-')}</div>" if (m.get('father') or m.get('mother')) else ""
-        notes_html = f"<div><b>บันทึกย่อ :</b> {m['notes']}</div>" if m.get('notes') else ""
-
-        st.markdown(
-            f"""
-            <div style='background: #FFFFFF; border: 1.5px solid #EADBCE; padding: 16px; border-radius: 16px; font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);'>
-                <div style='font-size: 1.2rem; font-weight: 700; color: #4A443F; margin-bottom: 4px; border-bottom: 1px solid #F3ECE1; padding-bottom: 8px;'>{m['name']}</div>
-                <div><b>ประเภท :</b> {type_display}</div>
-                <div><b>เพศ :</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {m.get('gen_level', 1)}</div>
-                {birth_date_html}
-                {parents_html}
-                {notes_html}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-        
-        # State key for delete confirmation
         del_key = f"confirm_del_{m['id']}"
+        edit_key = f"is_editing_{m['id']}"
+        edit_confirm_key = f"show_edit_confirm_{m['id']}"
+        pending_edit_key = f"pending_edit_data_{m['id']}"
+        
         if del_key not in st.session_state:
             st.session_state[del_key] = False
+        if edit_key not in st.session_state:
+            st.session_state[edit_key] = False
+        if edit_confirm_key not in st.session_state:
+            st.session_state[edit_confirm_key] = False
+        if pending_edit_key not in st.session_state:
+            st.session_state[pending_edit_key] = None
 
-        if not st.session_state[del_key]:
-            col_del, col_close = st.columns(2)
-            with col_del:
-                if st.button("🗑️ ลบข้อมูล", key=f"btn_del_{m['id']}", use_container_width=True, type="primary"):
-                    st.session_state[del_key] = True
+        # 1. หน้าจอตรวจสอบและยืนยันการแก้ไขข้อมูล
+        if st.session_state[edit_confirm_key] and st.session_state[pending_edit_key]:
+            pem = st.session_state[pending_edit_key]
+            st.markdown("<div class='section-title'>✨ ตรวจสอบข้อมูลก่อนยืนยันการแก้ไข</div>", unsafe_allow_html=True)
+            st.markdown(
+                f"""
+                <div style='background: #FFFFFF; border: 2px solid #BAE6FD; padding: 18px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 8px 20px rgba(186, 230, 253, 0.25);'>
+                    <div style='font-size: 1.05rem; font-weight: 700; color: #0369A1; margin-bottom: 10px; text-align: center; border-bottom: 1px solid #E0F2FE; padding-bottom: 8px;'>📋 ข้อมูลที่แก้ไขใหม่</div>
+                    <div style='font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 6px;'>
+                        <div><b>ชื่อ :</b> {pem['name']}</div>
+                        <div><b>ประเภท :</b> {pem['type']} ({pem['species']})</div>
+                        <div><b>เพศ :</b> {pem['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {pem['gen_level']}</div>
+                        <div><b>วันเกิด :</b> {pem['birth_date'] if pem['birth_date'] else '-'}</div>
+                        <div><b>พ่อ / แม่ :</b> {pem['father'] if pem['father'] else '-'} / {pem['mother'] if pem['mother'] else '-'}</div>
+                        <div><b>บันทึกเพิ่มเติม :</b> {pem['notes'] if pem['notes'] else '-'}</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            col_edit_yes, col_edit_no = st.columns(2)
+            with col_edit_yes:
+                if st.button("✓ ยืนยันการแก้ไข", key=f"confirm_edit_yes_{m['id']}", use_container_width=True, type="primary"):
+                    try:
+                        image_url = m.get('image_url')
+                        if pem['file_bytes'] is not None:
+                            file_ext = pem['file_name'].split(".")[-1]
+                            file_path = f"{uuid.uuid4()}.{file_ext}"
+                            supabase.storage.from_("fam-photos").upload(
+                                path=file_path,
+                                file=pem['file_bytes'],
+                                file_options={"content-type": pem['file_type']}
+                            )
+                            image_url = supabase.storage.from_("fam-photos").get_public_url(file_path)
+                            
+                            if m.get('image_url'):
+                                try:
+                                    old_filename = m['image_url'].split('/')[-1].split('?')[0]
+                                    supabase.storage.from_("fam-photos").remove([old_filename])
+                                except:
+                                    pass
+
+                        updated_data = {
+                            "name": pem['name'],
+                            "type": pem['type'],
+                            "species": pem['species'],
+                            "gender": pem['gender'],
+                            "gen_level": int(pem['gen_level']),
+                            "birth_date": pem['birth_date'],
+                            "father": pem['father'],
+                            "mother": pem['mother'],
+                            "notes": pem['notes'],
+                            "image_url": image_url
+                        }
+                        
+                        supabase.table("members").update(updated_data).eq("id", m["id"]).execute()
+                        st.success(f"แก้ไขข้อมูล {pem['name']} เรียบร้อยแล้ว")
+                        st.session_state[edit_confirm_key] = False
+                        st.session_state[edit_key] = False
+                        st.session_state[pending_edit_key] = None
+                        st.query_params.clear()
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"เกิดข้อผิดพลาดในการแก้ไขข้อมูล: {e}")
+            with col_edit_no:
+                if st.button("✕ ยกเลิก", key=f"confirm_edit_no_{m['id']}", use_container_width=True):
+                    st.session_state[edit_confirm_key] = False
                     st.rerun()
-            with col_close:
-                if st.button("ปิด", key=f"btn_close_{m['id']}", use_container_width=True):
-                    st.query_params.clear()
-                    st.rerun()
-        else:
+
+        # 2. หน้าจอฟอร์มแก้ไขข้อมูล
+        elif st.session_state[edit_key]:
+            st.markdown("<div class='section-title'>✨ แก้ไขข้อมูลสมาชิก</div>", unsafe_allow_html=True)
+            
+            with st.form(f"edit_form_{m['id']}"):
+                edit_name = st.text_input("ชื่อสมาชิก*", value=m['name'])
+                
+                edit_type = st.selectbox("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], index=0 if m.get('type') == 'คน' else 1)
+                
+                if edit_type == "คน":
+                    edit_species = "คน"
+                    gender_options = ["ชาย", "หญิง", "อื่นๆ"]
+                    curr_gender = m.get('gender', 'ชาย')
+                    edit_gender = st.selectbox("เพศ", gender_options, index=gender_options.index(curr_gender) if curr_gender in gender_options else 0)
+                else:
+                    species_options = ["แมว", "หมา", "นก", "กระต่าย", "อื่นๆ"]
+                    curr_species = m.get('species', 'แมว')
+                    edit_species = st.selectbox("ชนิดสัตว์เลี้ยง", species_options, index=species_options.index(curr_species) if curr_species in species_options else 0)
+                    gender_options = ["ผู้", "เมีย"]
+                    curr_gender = m.get('gender', 'ผู้')
+                    edit_gender = st.selectbox("เพศ", gender_options, index=gender_options.index(curr_gender) if curr_gender in gender_options else 0)
+                
+                edit_gen = st.number_input("Generation", min_value=1, max_value=10, value=int(m.get('gen_level', 1)), step=1)
+                
+                try:
+                    default_date = datetime.strptime(m['birth_date'], "%Y-%m-%d") if m.get('birth_date') else None
+                except:
+                    default_date = None
+                    
+                edit_birth_date = st.date_input("วัน/เดือน/ปี เกิด", value=default_date, min_value=datetime(1900, 1, 1), max_value=datetime.now(), format="DD/MM/YYYY")
+                
+                existing_members = fetch_members()
+                parent_target_gen = edit_gen - 1
+                if edit_gen > 1:
+                    father_options = ["- ไม่ระบุ -"] + [item["name"] for item in existing_members if item.get("gender") in ["ชาย", "ผู้"] and item.get("gen_level", 1) == parent_target_gen and item["id"] != m["id"]]
+                    mother_options = ["- ไม่ระบุ -"] + [item["name"] for item in existing_members if item.get("gender") in ["หญิง", "เมีย"] and item.get("gen_level", 1) == parent_target_gen and item["id"] != m["id"]]
+                else:
+                    father_options = ["- ไม่ระบุ -"]
+                    mother_options = ["- ไม่ระบุ -"]
+                    
+                f_default = m.get('father') if m.get('father') in father_options else "- ไม่ระบุ -"
+                m_default = m.get('mother') if m.get('mother') in mother_options else "- ไม่ระบุ -"
+                f_idx = father_options.index(f_default) if f_default in father_options else 0
+                m_idx = mother_options.index(m_default) if m_default in mother_options else 0
+                
+                col_f, col_m = st.columns(2)
+                with col_f:
+                    edit_father = st.selectbox("เลือกพ่อ", father_options, index=f_idx)
+                with col_m:
+                    edit_mother = st.selectbox("เลือกแม่", mother_options, index=m_idx)
+                    
+                edit_notes = st.text_area("บันทึกเพิ่มเติม", value=m.get('notes', ''))
+                edit_uploaded_file = st.file_uploader("📸 เปลี่ยนรูปถ่าย (ถ้าต้องการ)", type=["jpg", "png", "jpeg"])
+                
+                submitted_edit = st.form_submit_button("✨ ตรวจสอบข้อมูลก่อนแก้ไข", use_container_width=True)
+                
+                if submitted_edit:
+                    if not edit_name:
+                        st.error("กรุณากรอกชื่อสมาชิก")
+                    else:
+                        file_bytes = edit_uploaded_file.getvalue() if edit_uploaded_file is not None else None
+                        file_name_val = edit_uploaded_file.name if edit_uploaded_file is not None else None
+                        file_type_val = edit_uploaded_file.type if edit_uploaded_file is not None else None
+
+                        st.session_state[pending_edit_key] = {
+                            "name": edit_name,
+                            "type": edit_type,
+                            "species": edit_species,
+                            "gender": edit_gender,
+                            "gen_level": int(edit_gen),
+                            "birth_date": edit_birth_date.strftime("%Y-%m-%d") if edit_birth_date else None,
+                            "father": edit_father if edit_father != "- ไม่ระบุ -" else None,
+                            "mother": edit_mother if edit_mother != "- ไม่ระบุ -" else None,
+                            "notes": edit_notes,
+                            "file_bytes": file_bytes,
+                            "file_name": file_name_val,
+                            "file_type": file_type_val
+                        }
+                        st.session_state[edit_confirm_key] = True
+                        st.rerun()
+
+            if st.button("✕ ยกเลิกการแก้ไข", key=f"cancel_edit_{m['id']}", use_container_width=True):
+                st.session_state[edit_key] = False
+                st.rerun()
+
+        # 3. หน้าจอืนยันการลบข้อมูล
+        elif st.session_state[del_key]:
             st.markdown(
                 f"<div style='background: #FFF5F5; border: 1.5px solid #FEB2B2; padding: 12px; border-radius: 14px; text-align: center; margin-bottom: 10px; color: #9B2C2C; font-size: 0.88rem; font-weight: 600;'>"
                 f"⚠️ คุณต้องการลบข้อมูลของ <b>{m['name']}</b> ใช่หรือไม่?<br><span style='font-size:0.78rem; font-weight:normal; color:#C53030;'>การกระทำนี้ไม่สามารถย้อนกลับได้</span>"
@@ -437,7 +581,7 @@ def render_member_dialog(m):
                                 file_name = raw_filename.split('?')[0]
                                 supabase.storage.from_("fam-photos").remove([file_name])
                             except Exception as img_err:
-                                st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้: {img_err}")
+                                st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้ : {img_err}")
                         
                         supabase.table("members").delete().eq("id", m["id"]).execute()
                         st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
@@ -445,10 +589,55 @@ def render_member_dialog(m):
                         st.query_params.clear()
                         st.rerun()
                     except Exception as e:
-                        st.error(f"เกิดข้อผิดพลาดในการลบข้อมูล: {e}")
+                        st.error(f"เกิดข้อผิดพลาดในการลบข้อมูล : {e}")
             with col_cancel_del:
                 if st.button("✕ ยกเลิก", key=f"confirm_no_{m['id']}", use_container_width=True):
                     st.session_state[del_key] = False
+                    st.rerun()
+        
+        # 4. หน้าแสดงรายละเอียดปกติ
+        else:
+            if m.get('image_url'):
+                st.markdown(
+                    f'<div style="display: flex; justify-content: center; background: #FAF7F2; border-radius: 18px; overflow: hidden; margin-bottom: 12px; border: 1px solid #EADBCE;">'
+                    f'<img src="{m["image_url"]}" style="width: 100%; height: auto; display: block; object-fit: contain;">'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+            
+            if m.get('type') == 'คน':
+                type_display = 'คน'
+            else:
+                type_display = f"{m.get('type')} ({m.get('species', '-')})"
+                
+            birth_date_html = f"<div><b>วันเกิด :</b> {m['birth_date']}</div>" if m.get('birth_date') else ""
+            parents_html = f"<div><b>พ่อ / แม่ :</b> {m.get('father', '-')} / {m.get('mother', '-')}</div>" if (m.get('father') or m.get('mother')) else ""
+            notes_html = f"<div><b>บันทึกย่อ :</b> {m['notes']}</div>" if m.get('notes') else ""
+
+            st.markdown(
+                f"""
+                <div style='background: #FFFFFF; border: 1.5px solid #EADBCE; padding: 16px; border-radius: 16px; font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);'>
+                    <div style='font-size: 1.2rem; font-weight: 700; color: #4A443F; margin-bottom: 4px; border-bottom: 1px solid #F3ECE1; padding-bottom: 8px;'>{m['name']}</div>
+                    <div><b>ประเภท :</b> {type_display}</div>
+                    <div><b>เพศ :</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {m.get('gen_level', 1)}</div>
+                    {birth_date_html}
+                    {parents_html}
+                    {notes_html}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            
+            col_edit, col_del = st.columns(2)
+            with col_edit:
+                st.markdown('<div class="pastel-blue-btn">', unsafe_allow_html=True)
+                if st.button("✏️ แก้ไขข้อมูล", key=f"btn_edit_{m['id']}", use_container_width=True):
+                    st.session_state[edit_key] = True
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+            with col_del:
+                if st.button("🗑️ ลบข้อมูล", key=f"btn_del_{m['id']}", use_container_width=True, type="primary"):
+                    st.session_state[del_key] = True
                     st.rerun()
                 
     show_modal()
