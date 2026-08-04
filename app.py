@@ -176,26 +176,26 @@ st.markdown("""
     }
 
     /* =========================================================
-       3. Main Submit Form Button
+       3. Main Submit Form Button (ปรับให้สีเข้มและเด่นชัดขึ้น)
        ========================================================= */
     div[data-testid="stFormSubmitButton"] > button {
-        background: linear-gradient(135deg, #FFB7B2 0%, #FF9AA2 100%) !important;
+        background: linear-gradient(135deg, #FF5E7E 0%, #FF3366 100%) !important;
         color: #FFFFFF !important;
         border: none !important;
         border-radius: 12px !important;
-        font-weight: 600 !important;
-        font-size: 0.88rem !important;
-        padding: 0.5rem 1rem !important;
-        min-height: 40px !important;
-        box-shadow: 0 4px 12px rgba(255, 154, 162, 0.3) !important;
+        font-weight: 700 !important;
+        font-size: 0.92rem !important;
+        padding: 0.6rem 1rem !important;
+        min-height: 44px !important;
+        box-shadow: 0 6px 16px rgba(255, 94, 126, 0.4) !important;
         transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
         cursor: pointer !important;
     }
 
     div[data-testid="stFormSubmitButton"] > button:hover {
-        background: linear-gradient(135deg, #FF9AA2 0%, #FF8B94 100%) !important;
-        transform: translateY(-1px) !important;
-        box-shadow: 0 6px 16px rgba(255, 139, 148, 0.4) !important;
+        background: linear-gradient(135deg, #FF3366 0%, #E11D48 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 20px rgba(225, 29, 72, 0.5) !important;
     }
 
     /* =========================================================
@@ -318,7 +318,14 @@ def render_member_dialog(m):
             st.image(m['image_url'], use_container_width=True)
         
         st.markdown(f"### {m['name']}")
-        st.markdown(f"**ประเภท:** `{m['type']} ({m['species']})`")
+        
+        # จัดการการแสดงผลประเภท ไม่ให้แสดงชื่อซ้ำซ้อนกัน (เช่น คน (คน))
+        if m.get('type') == 'คน':
+            type_display = 'คน'
+        else:
+            type_display = f"{m.get('type')} ({m.get('species', '-')})"
+            
+        st.markdown(f"**ประเภท:** `{type_display}`")
         st.markdown(f"**เพศ:** {m['gender']} | **รุ่น:** Gen {m.get('gen_level', 0)}")
         
         if m.get('birth_date'):
@@ -404,7 +411,7 @@ with tab1:
                 if m.get('image_url'):
                     avatar_html = f'<img src="{m["image_url"]}" class="tree-avatar-img" style="{img_border_style}">'
                 else:
-                    icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤' # Fixed typo here
+                    icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
                     avatar_html = f'<div class="tree-avatar-placeholder" style="background-color: {theme["badge_bg"]}; {img_border_style}">{icon}</div>'
                 
                 node_html = f'<a href="?selected_id={m["id"]}" target="_self" class="tree-node-link"><div class="tree-node" style="{card_style}">{avatar_html}<div class="tree-node-name">{m["name"]}</div><div style="{badge_style}">Gen {m.get("gen_level", 0)}</div></div></a>'
