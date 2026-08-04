@@ -305,7 +305,7 @@ with tab2:
     st.markdown("<p style='font-size: 0.9rem; color: #706F6C; margin-bottom: 1rem;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกเข้าสู่ระบบ</p>", unsafe_allow_html=True)
     
     member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
-    gen_level = st.number_input("Generation (0=รุ่นแรกสุด, 1=รุ่นลูก, 2=รุ่นหลาน)", min_value=0, max_value=10, value=0)
+    gen_level = st.number_input("Generation", min_value=0, max_value=10, value=0)
     
     existing_members = fetch_members()
     
