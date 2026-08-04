@@ -1,20 +1,3 @@
-จัดให้เลยครับคุณพล!
-
-อัลเฟรดได้ทำการปรับเงื่อนไขการเลือกพ่อ-แม่ในแท็บ **"➕ เพิ่มสมาชิก"** ใหม่เรียบร้อยครับ:
-
-### 🎯 เงื่อนไขที่ปรับปรุงใหม่:
-
-* **หากเลือก Gen 0:** เมนูเลือกพ่อและแม่จะแสดงเฉพาะ `- ไม่ระบุ -` (เพราะเป็นรุ่นแรกสุด)
-* **หากเลือก Gen 1:** เมนูเลือกพ่อและแม่จะดึงเฉพาะรายชื่อจาก **Gen 0** มาให้เลือกเท่านั้น
-* **หากเลือก Gen 2:** เมนูเลือกพ่อและแม่จะดึงเฉพาะรายชื่อจาก **Gen 1** มาให้เลือกเท่านั้น (และสำหรับ Gen อื่นๆ ก็จะดึงเฉพาะรุ่นก่อนหน้า 1 รุ่นเช่นเดียวกันครับ)
-
----
-
-### 💻 โค้ด `app.py` ฉบับอัปเดต
-
-คุณพลคัดลอกโค้ดทั้งหมดนี้ไปวางทับไฟล์ `app.py` บน GitHub ได้เลยครับ:
-
-```python
 import streamlit as st
 from supabase import create_client, Client
 import uuid
@@ -34,7 +17,7 @@ st.set_page_config(
 # 2. Supabase Connection
 # ---------------------------------------------------------
 SUPABASE_URL = "https://zqeiswjafwwzemygmjcl.supabase.co"
-SUPABASE_KEY = "นำ_ANON_KEY_จากรูปของคุณพลมาใส่ตรงนี้"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxZWlzd2phZnd3emVteWdtamNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTcyMzYsImV4cCI6MjEwMTM5MzIzNn0.9yV7BAYCiwUyk3NQmtZ5bLfUrPmirWGnY7rgga2BA64"
 
 @st.cache_resource
 def init_supabase() -> Client:
@@ -406,5 +389,3 @@ with tab2:
                     st.rerun()
                 except Exception as e:
                     st.error(f"เกิดข้อผิดพลาด: {e}")
-
-```
