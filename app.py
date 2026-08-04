@@ -189,15 +189,17 @@ st.markdown("""
         width: 100% !important;
     }
 
-    /* ปุ่มรอง / ปุ่มยกเลิก (Secondary) -> สีเขียวพาสเทลละมุน (Soft Sage Green) */
+    /* ปุ่มรองทั่วไป (Secondary) -> สีเขียวพาสเทลละมุน */
     div.stButton > button:not([kind="primary"]) {
         background: linear-gradient(135deg, #E2ECE9 0%, #D4E2DE) !important;
         color: #3D5A5B !important;
-        border: 1px solid #C4D6D2 !important;
+        border: 1.5px solid #C4D6D2 !important;
         border-radius: 14px !important;
         font-weight: 600 !important;
-        padding: 0.5rem 1rem !important;
-        min-height: 42px !important;
+        font-size: 0.9rem !important;
+        padding: 0.5rem 0.8rem !important;
+        min-height: 44px !important;
+        width: 100% !important;
         transition: all 0.25s ease !important;
     }
 
@@ -207,35 +209,39 @@ st.markdown("""
         border-color: #B2C8C3 !important;
     }
 
-    /* ปุ่มแก้ไขข้อมูล -> สีฟ้าอ่อนพาสเทล (Pastel Light Blue) */
+    /* ปุ่มแก้ไขข้อมูล -> สีฟ้าอ่อนพาสเทลที่ชัดเจนและขนาดเท่ากันเป๊ะ */
     .pastel-blue-btn button {
         background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%) !important;
-        color: #0369A1 !important;
-        border: 1px solid #7DD3FC !important;
+        color: #0284C7 !important;
+        border: 1.5px solid #7DD3FC !important;
         border-radius: 14px !important;
         font-weight: 600 !important;
-        padding: 0.5rem 1rem !important;
-        min-height: 42px !important;
+        font-size: 0.9rem !important;
+        padding: 0.5rem 0.8rem !important;
+        min-height: 44px !important;
+        width: 100% !important;
         box-shadow: 0 4px 12px rgba(186, 230, 253, 0.4) !important;
         transition: all 0.25s ease !important;
     }
 
     .pastel-blue-btn button:hover {
-        background: linear-gradient(135deg, #BAE6FD 0%, #7DD3FC 100%) !important;
-        color: #0284C7 !important;
-        border-color: #38BDF8 !important;
+        background: linear-gradient(135deg, #BAE6FD 0%, #38BDF8 100%) !important;
+        color: #0369A1 !important;
+        border-color: #0284C7 !important;
         transform: translateY(-1px) !important;
     }
 
-    /* ปุ่มหลัก / ปุ่มยืนยัน / ลบข้อมูล (Primary) -> สีชมพูพีช-แดงละมุน */
+    /* ปุ่มหลัก / ลบข้อมูล (Primary) -> สีชมพูพีช-แดงละมุน และขนาดเท่ากัน */
     div.stButton > button[kind="primary"] {
         background: linear-gradient(135deg, #FF5E7E 0%, #FF3366 100%) !important;
         color: #FFFFFF !important;
-        border: none !important;
+        border: 1.5px solid #FF3366 !important;
         border-radius: 14px !important;
         font-weight: 600 !important;
-        padding: 0.5rem 1rem !important;
-        min-height: 42px !important;
+        font-size: 0.9rem !important;
+        padding: 0.5rem 0.8rem !important;
+        min-height: 44px !important;
+        width: 100% !important;
         box-shadow: 0 4px 12px rgba(255, 94, 126, 0.3) !important;
         transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }
@@ -563,7 +569,7 @@ def render_member_dialog(m):
                 st.session_state[edit_key] = False
                 st.rerun()
 
-        # 3. หน้าจอืนยันการลบข้อมูล
+        # 3. หน้าจอยืนยันการลบข้อมูล
         elif st.session_state[del_key]:
             st.markdown(
                 f"<div style='background: #FFF5F5; border: 1.5px solid #FEB2B2; padding: 12px; border-radius: 14px; text-align: center; margin-bottom: 10px; color: #9B2C2C; font-size: 0.88rem; font-weight: 600;'>"
@@ -581,7 +587,7 @@ def render_member_dialog(m):
                                 file_name = raw_filename.split('?')[0]
                                 supabase.storage.from_("fam-photos").remove([file_name])
                             except Exception as img_err:
-                                st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้ : {img_err}")
+                                st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้: {img_err}")
                         
                         supabase.table("members").delete().eq("id", m["id"]).execute()
                         st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
