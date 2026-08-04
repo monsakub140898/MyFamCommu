@@ -29,12 +29,10 @@ supabase = init_supabase()
 # ---------------------------------------------------------
 st.markdown("""
 <style>
-    /* ซ่อน Header / Footer เดิมของ Streamlit */
     header {visibility: hidden;}
     footer {visibility: hidden;}
     #MainMenu {visibility: hidden;}
     
-    /* บังคับกรอบหน้าจอให้พอดีกับมือถือทุกรุ่น (รวมถึง iPhone 13 บน Safari) */
     .block-container {
         padding-top: 1.5rem;
         padding-bottom: 3rem;
@@ -42,7 +40,6 @@ st.markdown("""
         margin: 0 auto;
     }
     
-    /* ดีไซน์การ์ดสมาชิก */
     .member-card {
         border-radius: 20px;
         padding: 16px;
@@ -53,10 +50,10 @@ st.markdown("""
         align-items: center;
         gap: 15px;
     }
-    .gen-0 { background-color: #E6FFFA; border-color: #B2F5EA; } /* ฟ้าพาสเทล */
-    .gen-1 { background-color: #FFFAF0; border-color: #FEEBC8; } /* ส้มพาสเทล */
-    .gen-2 { background-color: #FFF5F7; border-color: #FED7E2; } /* ชมพูพาสเทล */
-    .gen-3 { background-color: #F0FFF4; border-color: #C6F6D5; } /* เขียวพาสเทล */
+    .gen-0 { background-color: #E6FFFA; border-color: #B2F5EA; }
+    .gen-1 { background-color: #FFFAF0; border-color: #FEEBC8; }
+    .gen-2 { background-color: #FFF5F7; border-color: #FED7E2; }
+    .gen-3 { background-color: #F0FFF4; border-color: #C6F6D5; }
 
     .avatar-img {
         width: 60px;
@@ -92,7 +89,8 @@ def fetch_members():
     try:
         response = supabase.table("members").select("*").order("gen_level", desc=False).execute()
         return response.data
-    except Exception:
+    except Exception as e:
+        st.error(f"ไม่สามารถดึงข้อมูลจาก Cloud ได้: {e}")
         return []
 
 # ---------------------------------------------------------
@@ -101,7 +99,6 @@ def fetch_members():
 if menu == "🌳 ผังครอบครัว":
     data = fetch_members()
     
-    # ถ้ายังไม่มีข้อมูลในระบบเลย (ครั้งแรกสุด) ให้แสดงหน้าว่างสวยๆ
     if not data:
         st.markdown("""
         <div style="text-align: center; padding: 40px 20px; background-color: #FFF5F5; border-radius: 20px; border: 2px dashed #FEB2B2; margin-top: 10px;">
@@ -111,14 +108,12 @@ if menu == "🌳 ผังครอบครัว":
         </div>
         """, unsafe_allow_html=True)
     else:
-        # แสดงผลตาม Generation แนวดิ่ง
         for gen in range(6):
             members_in_gen = [m for m in data if m.get("gen_level") == gen]
             if members_in_gen:
                 st.markdown(f"<p style='color:#A0AEC0; font-weight:bold; font-size:0.8rem; letter-spacing:1px; margin-bottom:8px;'>GENERATION {gen}</p>", unsafe_allow_html=True)
                 
                 for m in members_in_gen:
-                    # เตรียมรูปโปรไฟล์
                     if m.get('image_url'):
                         img_html = f"<img src='{m['image_url']}' class='avatar-img'>"
                     else:
@@ -138,7 +133,6 @@ if menu == "🌳 ผังครอบครัว":
                     """
                     st.markdown(card_html, unsafe_allow_html=True)
                     
-                    # คลิกเพื่อดูรายละเอียดโปรไฟล์ (Profile Detail Sheet)
                     with st.expander(f"📖 ดูโปรไฟล์ของ {m['name']}"):
                         if m.get('image_url'):
                             st.image(m['image_url'], use_container_width=True)
@@ -146,7 +140,7 @@ if menu == "🌳 ผังครอบครัว":
                         st.write(f"**เพศ:** {m['gender']}")
                         st.write(f"**รุ่น:** Gen {m['gen_level']}")
                         if m.get('father') or m.get('mother'):
-                            st.write(f"**พ่อ-แม่:** {m.get('father', '-')} & {m.get('mother', '-')}")
+                            st.write(f"**สายเลือด:** พ่อ [{m.get('father', '-')}] | แม่ [{m.get('mother', '-')}]")
                         st.write(f"**บันทึกพัฒนาการ / โน้ต:** {m.get('notes') if m.get('notes') else '-'}")
 
 # ---------------------------------------------------------
@@ -155,13 +149,12 @@ if menu == "🌳 ผังครอบครัว":
 elif menu == "➕ เพิ่มสมาชิกใหม่":
     st.subheader("เพิ่มสมาชิกใหม่")
     
-    # Conditional Logic เลือกประเภท
     member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True)
     
     existing_members = fetch_members()
     member_names = ["- ไม่ระบุ -"] + [m["name"] for m in existing_members]
     
-    with st.form("add_member_form", clear_on_submit=True):
+    with st.form("add_member_form"):
         name = st.text_input("ชื่อสมาชิก (Name)*")
         
         if member_type == "คน":
@@ -189,33 +182,35 @@ elif menu == "➕ เพิ่มสมาชิกใหม่":
             if not name:
                 st.error("กรุณากรอกชื่อสมาชิกด้วยครับ")
             else:
-                image_url = None
-                
-                # ถ้ามีรูปภาพ ให้อัปโหลดขึ้น Storage Bucket 'fam-photos'
-                if uploaded_file is not None:
-                    file_ext = uploaded_file.name.split(".")[-1]
-                    file_path = f"{uuid.uuid4()}.{file_ext}"
+                try:
+                    image_url = None
                     
-                    supabase.storage.from_("fam-photos").upload(
-                        path=file_path,
-                        file=uploaded_file.getvalue(),
-                        file_options={"content-type": uploaded_file.type}
-                    )
-                    image_url = supabase.storage.from_("fam-photos").get_public_url(file_path)
-                
-                # บันทึกลง Supabase Database
-                new_member = {
-                    "name": name,
-                    "type": member_type,
-                    "species": species,
-                    "gender": gender,
-                    "gen_level": int(gen_level),
-                    "father": father if father != "- ไม่ระบุ -" else None,
-                    "mother": mother if mother != "- ไม่ระบุ -" else None,
-                    "notes": notes,
-                    "image_url": image_url
-                }
-                
-                supabase.table("members").insert(new_member).execute()
-                st.success(f"บันทึกข้อมูล {name} เข้าสู่ระบบเรียบร้อยแล้ว!")
-                st.balloons()
+                    if uploaded_file is not None:
+                        file_ext = uploaded_file.name.split(".")[-1]
+                        file_path = f"{uuid.uuid4()}.{file_ext}"
+                        
+                        supabase.storage.from_("fam-photos").upload(
+                            path=file_path,
+                            file=uploaded_file.getvalue(),
+                            file_options={"content-type": uploaded_file.type}
+                        )
+                        image_url = supabase.storage.from_("fam-photos").get_public_url(file_path)
+                    
+                    new_member = {
+                        "name": name,
+                        "type": member_type,
+                        "species": species,
+                        "gender": gender,
+                        "gen_level": int(gen_level),
+                        "father": father if father != "- ไม่ระบุ -" else None,
+                        "mother": mother if mother != "- ไม่ระบุ -" else None,
+                        "notes": notes,
+                        "image_url": image_url
+                    }
+                    
+                    supabase.table("members").insert(new_member).execute()
+                    st.success(f"บันทึกข้อมูล {name} เรียบร้อยแล้ว!")
+                    st.balloons()
+                    st.rerun() # รีเฟรชหน้าจอทันทีเพื่อโหลดข้อมูลใหม่
+                except Exception as e:
+                    st.error(f"เกิดข้อผิดพลาดในการบันทึก: {e}")
