@@ -385,17 +385,17 @@ def render_member_dialog(m):
         else:
             type_display = f"{m.get('type')} ({m.get('species', '-')})"
             
-        birth_date_html = f"<div><b>วันเกิด:</b> {m['birth_date']}</div>" if m.get('birth_date') else ""
-        parents_html = f"<div><b>พ่อ / แม่:</b> {m.get('father', '-')} / {m.get('mother', '-')}</div>" if (m.get('father') or m.get('mother')) else ""
-        notes_html = f"<div><b>บันทึกย่อ:</b> {m['notes']}</div>" if m.get('notes') else ""
+        birth_date_html = f"<div><b>วันเกิด :</b> {m['birth_date']}</div>" if m.get('birth_date') else ""
+        parents_html = f"<div><b>พ่อ / แม่ :</b> {m.get('father', '-')} / {m.get('mother', '-')}</div>" if (m.get('father') or m.get('mother')) else ""
+        notes_html = f"<div><b>บันทึกย่อ :</b> {m['notes']}</div>" if m.get('notes') else ""
 
         # รวมชื่อเข้ามาไว้ในกล่องข้อมูลด้านล่าง พร้อมตกแต่งเส้นคั้นและหัวข้อให้เรียบร้อย
         st.markdown(
             f"""
             <div style='background: #FFFFFF; border: 1.5px solid #EADBCE; padding: 16px; border-radius: 16px; font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);'>
                 <div style='font-size: 1.2rem; font-weight: 700; color: #4A443F; margin-bottom: 4px; border-bottom: 1px solid #F3ECE1; padding-bottom: 8px;'>{m['name']}</div>
-                <div><b>ประเภท:</b> {type_display}</div>
-                <div><b>เพศ:</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {m.get('gen_level', 1)}</div>
+                <div><b>ประเภท :</b> {type_display}</div>
+                <div><b>เพศ :</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {m.get('gen_level', 1)}</div>
                 {birth_date_html}
                 {parents_html}
                 {notes_html}
