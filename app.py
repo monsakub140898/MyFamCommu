@@ -197,10 +197,11 @@ st.markdown("""
     }
 
     div.stButton > button {
+        width: 70% !important;
+        margin: 0 auto !important;
         border-radius: 12px !important;
         font-weight: 600 !important;
         transition: all 0.25s ease !important;
-        width: 100% !important;
     }
 
     div[data-testid="stFormSubmitButton"] {
@@ -218,7 +219,8 @@ st.markdown("""
         font-size: 0.92rem !important;
         padding: 0.6rem 1rem !important;
         min-height: 44px !important;
-        width: 100% !important;
+        width: 80% !important;
+        margin: 0 auto !important;
         box-shadow: 0 6px 16px rgba(255, 94, 126, 0.4) !important;
         transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
         cursor: pointer !important;
