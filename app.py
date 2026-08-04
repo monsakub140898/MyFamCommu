@@ -404,7 +404,7 @@ with tab1:
                 if m.get('image_url'):
                     avatar_html = f'<img src="{m["image_url"]}" class="tree-avatar-img" style="{img_border_style}">'
                 else:
-                    icon = '🐱' if m.get('type'] == 'สัตว์เลี้ยง' else '👤'
+                    icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤' # Fixed typo here
                     avatar_html = f'<div class="tree-avatar-placeholder" style="background-color: {theme["badge_bg"]}; {img_border_style}">{icon}</div>'
                 
                 node_html = f'<a href="?selected_id={m["id"]}" target="_self" class="tree-node-link"><div class="tree-node" style="{card_style}">{avatar_html}<div class="tree-node-name">{m["name"]}</div><div style="{badge_style}">Gen {m.get("gen_level", 0)}</div></div></a>'
@@ -425,11 +425,9 @@ with tab2:
     col_type, col_gen = st.columns([1.0, 1.0])
     
     with col_type:
-        # ตัดหัวข้อ "ประเภทสมาชิก" ออก เหลือแค่ตัวเลือก radio กะทัดรัด
         member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
         
     with col_gen:
-        # กลับมาใช้ st.number_input แบบดั้งเดิม (มีปุ่ม + - ในตัวเล็กกะทัดรัด ไม่ยาวล้นจอ)
         gen_level = st.number_input(
             "Generation", 
             min_value=0, 
