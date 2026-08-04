@@ -2,7 +2,6 @@ import streamlit as st
 from supabase import create_client, Client
 import uuid
 from datetime import datetime
-import html
 
 # ---------------------------------------------------------
 # 1. Page Configuration (Mobile-First)
@@ -27,7 +26,7 @@ def init_supabase() -> Client:
 supabase = init_supabase()
 
 # ---------------------------------------------------------
-# 3. Custom Minimalist CSS (Claude Aesthetic)
+# 3. Custom Minimalist CSS (Claude Aesthetic + CSS Tree Layout)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -77,74 +76,89 @@ st.markdown("""
     }
 
     .gen-header {
-        font-size: 0.88rem;
+        font-size: 0.85rem;
         font-weight: 600;
         color: #D97757;
         margin-top: 1.2rem;
         margin-bottom: 0.6rem;
-        display: flex;
-        align-items: center;
-        gap: 6px;
     }
 
-    .member-card {
+    /* CSS Visual Family Tree Styles */
+    .tree-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding: 15px 0;
         background: #FFFFFF;
         border: 1px solid #EAEAE6;
-        border-radius: 12px;
-        padding: 12px 16px;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        border-radius: 16px;
+        margin-bottom: 20px;
     }
 
-    .avatar-img {
-        width: 44px;
-        height: 44px;
+    .tree-level {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        width: 100%;
+        position: relative;
+    }
+
+    .tree-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #FAFAFA;
+        border: 1px solid #EFEFEA;
+        border-radius: 12px;
+        padding: 10px 14px;
+        min-width: 90px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .tree-avatar-img {
+        width: 52px;
+        height: 52px;
         border-radius: 50%;
         object-fit: cover;
-        border: 1px solid #EFEFEA;
-        flex-shrink: 0;
+        border: 2px solid #D97757;
+        margin-bottom: 6px;
     }
-    
-    .avatar-placeholder {
-        width: 44px;
-        height: 44px;
+
+    .tree-avatar-placeholder {
+        width: 52px;
+        height: 52px;
         border-radius: 50%;
-        background-color: #F4F4F0;
+        background-color: #EFEFEA;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
-        flex-shrink: 0;
-        border: 1px solid #EFEFEA;
+        font-size: 1.4rem;
+        margin-bottom: 6px;
+        border: 2px solid #D97757;
     }
 
-    .member-name {
-        font-size: 0.92rem;
+    .tree-node-name {
+        font-size: 0.85rem;
         font-weight: 600;
         color: #1A1A18;
-        margin: 0;
+        text-align: center;
     }
 
-    .member-sub {
-        font-size: 0.78rem;
-        color: #706F6C;
-        margin-top: 2px;
+    .tree-node-sub {
+        font-size: 0.7rem;
+        color: #8C8A85;
     }
 
-    .badge-tag {
-        display: inline-block;
-        padding: 1px 7px;
-        border-radius: 4px;
-        font-size: 0.68rem;
-        font-weight: 500;
-        background-color: #F3F3EE;
-        color: #575653;
-        margin-left: 6px;
+    .tree-connector {
+        width: 2px;
+        height: 16px;
+        background-color: #D97757;
+        margin: -10px 0;
     }
 
+    /* Tabs Style */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
         background-color: #F4F4F0;
@@ -197,80 +211,6 @@ def fetch_members():
         return []
 
 # ---------------------------------------------------------
-# 5. ฟังก์ชันสร้าง Graphviz DOT Syntax (แสดงรูปภาพ + แสดงเฉพาะชื่อ)
-# ---------------------------------------------------------
-def generate_family_tree_dot(members):
-    if not members:
-        return None
-        
-    dot = [
-        'digraph FamilyTree {',
-        '    graph [rankdir=TB, bgcolor="transparent", nodesep=0.3, ranksep=0.4];',
-        '    node [fontname="Sarabun", shape=plaintext];',
-        '    edge [color="#B4B2AC", penwidth=1.5, dir=none];',
-    ]
-    
-    name_to_member = {m['name']: m for m in members}
-    
-    for m in members:
-        m_id = f"node_{m['id']}".replace("-", "_")
-        safe_name = html.escape(m['name'])
-        
-        # แสดงรูปภาพถ้ามี หากไม่มีจะแสดงไอคอนแทน
-        if m.get('image_url'):
-            safe_img_url = html.escape(m['image_url'])
-            img_tag = f'<TR><TD ALIGN="CENTER"><IMG SRC="{safe_img_url}"/></TD></TR>'
-        else:
-            icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
-            img_tag = f'<TR><TD ALIGN="CENTER"><FONT POINT-SIZE="16">{icon}</FONT></TD></TR>'
-            
-        label = f'''<
-        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#FFFFFF" COLOR="#D97757" STYLE="ROUNDED">
-            {img_tag}
-            <TR><TD ALIGN="CENTER"><FONT POINT-SIZE="11"><B>{safe_name}</B></FONT></TD></TR>
-        </TABLE>
-        >'''
-        dot.append(f'    {m_id} [label={label}];')
-
-    unions = {}
-    union_counter = 0
-
-    for m in members:
-        m_id = f"node_{m['id']}".replace("-", "_")
-        father_name = m.get('father')
-        mother_name = m.get('mother')
-        
-        father = name_to_member.get(father_name) if father_name else None
-        mother = name_to_member.get(mother_name) if mother_name else None
-        
-        if father and mother:
-            couple_key = tuple(sorted([father['name'], mother['name']]))
-            if couple_key not in unions:
-                union_counter += 1
-                u_id = f"union_{union_counter}"
-                f_id = f"node_{father['id']}".replace("-", "_")
-                mo_id = f"node_{mother['id']}".replace("-", "_")
-                
-                dot.append(f'    {u_id} [shape=point, width=0.01, height=0.01];')
-                dot.append(f'    {{ rank=same; {f_id}; {mo_id}; }}')
-                dot.append(f'    {f_id} -> {u_id};')
-                dot.append(f'    {mo_id} -> {u_id};')
-                unions[couple_key] = u_id
-            
-            u_id = unions[couple_key]
-            dot.append(f'    {u_id} -> {m_id};')
-            
-        elif father:
-            f_id = f"node_{father['id']}".replace("-", "_")
-            dot.append(f'    {f_id} -> {m_id};')
-        elif mother:
-            mo_id = f"node_{mother['id']}".replace("-", "_")
-            dot.append(f'    {mo_id} -> {m_id};')
-            
-    dot.append('}')
-    return '\n'.join(dot)
-
-# ---------------------------------------------------------
 # Tabs Navigation
 # ---------------------------------------------------------
 tab1, tab2 = st.tabs(["🌳 ผังครอบครัว", "➕ เพิ่มสมาชิก"])
@@ -290,50 +230,58 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
     else:
-        # 1. แสดงแผนผังต้นไม้
+        # ---------------------------------------------------------
+        # 1. แสดงแผนผังสายเลือดแบบ Visual CSS Tree (รองรับรูปถ่าย 100%)
+        # ---------------------------------------------------------
         st.markdown("<div class='section-title'>แผนผังสายเลือด (FAMILY TREE)</div>", unsafe_allow_html=True)
         
-        dot_code = generate_family_tree_dot(data)
-        if dot_code:
-            st.graphviz_chart(dot_code, use_container_width=True)
+        unique_gens = sorted(list(set(m.get('gen_level', 0) for m in data)))
         
+        tree_html = "<div class='tree-container'>"
+        for idx, gen in enumerate(unique_gens):
+            gen_members = [m for m in data if m.get('gen_level', 0) == gen]
+            
+            if idx > 0:
+                tree_html += "<div class='tree-connector'></div>"
+                
+            tree_html += "<div class='tree-level'>"
+            for m in gen_members:
+                if m.get('image_url'):
+                    avatar_html = f"<img src='{m['image_url']}' class='tree-avatar-img'>"
+                else:
+                    icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
+                    avatar_html = f"<div class='tree-avatar-placeholder'>{icon}</div>"
+                
+                tree_html += f"""
+                <div class='tree-node'>
+                    {avatar_html}
+                    <div class='tree-node-name'>{m['name']}</div>
+                    <div class='tree-node-sub'>Gen {m.get('gen_level', 0)}</div>
+                </div>
+                """
+            tree_html += "</div>"
+        tree_html += "</div>"
+        
+        st.markdown(tree_html, unsafe_allow_html=True)
         st.divider()
 
-        # 2. รายชื่อสมาชิกทั้งหมด (จัดกลุ่มแยกตาม Generation)
+        # ---------------------------------------------------------
+        # 2. รายชื่อสมาชิกทั้งหมด (คลิกที่แถบชื่อเพื่อดูข้อมูล/ลบข้อมูล)
+        # ---------------------------------------------------------
         st.markdown("<div class='section-title'>รายชื่อสมาชิกทั้งหมด</div>", unsafe_allow_html=True)
-        
-        # ดึงรายชื่อ Gen ที่มีทั้งหมดแบบไม่ซ้ำ และเรียงลำดับ
-        unique_gens = sorted(list(set(m.get('gen_level', 0) for m in data)))
         
         for gen in unique_gens:
             st.markdown(f"<div class='gen-header'>📌 Generation {gen}</div>", unsafe_allow_html=True)
-            
             gen_members = [m for m in data if m.get('gen_level', 0) == gen]
             
             for m in gen_members:
-                if m.get('image_url'):
-                    img_html = f"<img src='{m['image_url']}' class='avatar-img'>"
-                else:
-                    icon = '🐱' if m['type'] == 'สัตว์เลี้ยง' else '👤'
-                    img_html = f"<div class='avatar-placeholder'>{icon}</div>"
+                icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
                 
-                card_html = f"""
-                <div class="member-card">
-                    {img_html}
-                    <div style="flex-grow: 1;">
-                        <div class="member-name">
-                            {m['name']}
-                            <span class="badge-tag">{m['type']}</span>
-                        </div>
-                        <div class="member-sub">{m['species']} | เพศ: {m['gender']}</div>
-                    </div>
-                </div>
-                """
-                st.markdown(card_html, unsafe_allow_html=True)
-                
-                with st.expander(f"ข้อมูลของ {m['name']}"):
+                # กดที่แถบชื่อเพื่อเปิดดูข้อมูลและปุ่มลบได้เลย ไม่ต้องมีปุ่ม "ข้อมูลของ..." ซ้ำซ้อน
+                with st.expander(f"{icon} {m['name']} ({m['species']})"):
                     if m.get('image_url'):
                         st.image(m['image_url'], use_container_width=True)
+                    st.write(f"**ชื่อ:** {m['name']}")
                     st.write(f"**ประเภท:** {m['type']} ({m['species']})")
                     st.write(f"**เพศ:** {m['gender']} | **รุ่น:** Gen {m['gen_level']}")
                     if m.get('birth_date'):
@@ -344,13 +292,24 @@ with tab1:
                         st.write(f"**บันทึก:** {m['notes']}")
                     
                     st.divider()
+                    
+                    # ปุ่มลบข้อมูล (พร้อมลบรูปถ่ายใน Supabase Storage อัตโนมัติ)
                     if st.button(f"🗑️ ลบ {m['name']}", key=f"del_{m['id']}", use_container_width=True):
                         try:
+                            # 1. ลบรูปถ่ายออกจาก Storage (ถ้ามี)
+                            if m.get('image_url'):
+                                try:
+                                    file_name = m['image_url'].split('/')[-1]
+                                    supabase.storage.from_("fam-photos").remove([file_name])
+                                except Exception as img_err:
+                                    st.warning(f"ลบรูปภาพไม่สำเร็จ: {img_err}")
+                            
+                            # 2. ลบข้อมูลจากฐานข้อมูล
                             supabase.table("members").delete().eq("id", m["id"]).execute()
-                            st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
+                            st.success(f"ลบ {m['name']} และรูปภาพเรียบร้อยแล้ว")
                             st.rerun()
                         except Exception as e:
-                            st.error(f"เกิดข้อผิดพลาด: {e}")
+                            st.error(f"เกิดข้อผิดพลาดในการลบ: {e}")
 
 # ---------------------------------------------------------
 # Tab 2: เพิ่มสมาชิกใหม่
@@ -359,7 +318,6 @@ with tab2:
     st.markdown("<p style='font-size: 0.9rem; color: #706F6C; margin-bottom: 1rem;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกเข้าสู่ระบบ</p>", unsafe_allow_html=True)
     
     member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
-    
     gen_level = st.number_input("Generation (0=รุ่นแรกสุด, 1=รุ่นลูก, 2=รุ่นหลาน)", min_value=0, max_value=10, value=0)
     
     existing_members = fetch_members()
