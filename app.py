@@ -34,7 +34,6 @@ st.markdown("""
     footer {visibility: hidden;}
     #MainMenu {visibility: hidden;}
     
-    /* เปลี่ยนมาใช้ฟอนต์ Outfit คู่กับ Mitr เพื่อความสมูท ละมุน และดูเป็นกันเองมากขึ้น */
     @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap');
     
     html, body, [class*="css"] {
@@ -78,15 +77,8 @@ st.markdown("""
         text-align: center;
     }
 
-    .input-label {
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: #7A6F64;
-        margin-bottom: 4px;
-    }
-
     /* =========================================================
-       1. แท็บเมนู (Tabs Navigation - จัดให้อยู่ตรงกลางแบบสมบูรณ์)
+       1. แท็บเมนู (Tabs Navigation)
        ========================================================= */
     div[data-testid="stTabs"] {
         display: flex !important;
@@ -189,7 +181,7 @@ st.markdown("""
     }
 
     /* =========================================================
-       3. Buttons & Submit Form Button (Centered & Styled)
+       3. Minimalist Button & Modal Button Styling
        ========================================================= */
     div.stButton {
         display: flex !important;
@@ -197,14 +189,44 @@ st.markdown("""
         width: 100% !important;
     }
 
-    div.stButton > button {
-        width: 70% !important;
-        margin: 0 auto !important;
-        border-radius: 12px !important;
+    /* ปุ่มทั่วไป / ปุ่มปิด (Secondary Button) ให้ดูเรียบง่าย สบายตา */
+    div.stButton > button:not([kind="primary"]) {
+        background: #F5EFE6 !important;
+        color: #7A6F64 !important;
+        border: 1px solid #EADBCE !important;
+        border-radius: 14px !important;
         font-weight: 600 !important;
+        padding: 0.5rem 1rem !important;
+        min-height: 42px !important;
         transition: all 0.25s ease !important;
     }
 
+    div.stButton > button:not([kind="primary"]):hover {
+        background: #EADBCE !important;
+        color: #5C5248 !important;
+        border-color: #D6C5B4 !important;
+    }
+
+    /* ปุ่มลบ (Primary Button) ปรับให้เป็นโทนพาสเทลชมพู-ส้มละมุน ไม่แดงจัดจนโดดเกินไป */
+    div.stButton > button[kind="primary"] {
+        background: linear-gradient(135deg, #FFB5A7 0%, #FF8FAB 100%) !important;
+        color: #6E3A3A !important;
+        border: none !important;
+        border-radius: 14px !important;
+        font-weight: 600 !important;
+        padding: 0.5rem 1rem !important;
+        min-height: 42px !important;
+        box-shadow: 0 4px 12px rgba(255, 143, 171, 0.25) !important;
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+
+    div.stButton > button[kind="primary"]:hover {
+        background: linear-gradient(135deg, #FFA293 0%, #FF7597 100%) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 16px rgba(255, 143, 171, 0.4) !important;
+    }
+
+    /* ปุ่ม Submit ในฟอร์ม */
     div[data-testid="stFormSubmitButton"] {
         display: flex !important;
         justify-content: center !important;
@@ -215,14 +237,14 @@ st.markdown("""
         background: linear-gradient(135deg, #FF5E7E 0%, #FF3366 100%) !important;
         color: #FFFFFF !important;
         border: none !important;
-        border-radius: 12px !important;
+        border-radius: 14px !important;
         font-weight: 700 !important;
         font-size: 0.92rem !important;
         padding: 0.6rem 1rem !important;
         min-height: 44px !important;
         width: 80% !important;
         margin: 0 auto !important;
-        box-shadow: 0 6px 16px rgba(255, 94, 126, 0.4) !important;
+        box-shadow: 0 6px 16px rgba(255, 94, 126, 0.3) !important;
         transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
         cursor: pointer !important;
     }
@@ -230,7 +252,7 @@ st.markdown("""
     div[data-testid="stFormSubmitButton"] > button:hover {
         background: linear-gradient(135deg, #FF3366 0%, #E11D48 100%) !important;
         transform: translateY(-2px) !important;
-        box-shadow: 0 8px 20px rgba(225, 29, 72, 0.5) !important;
+        box-shadow: 0 8px 20px rgba(225, 29, 72, 0.4) !important;
     }
 
     /* =========================================================
@@ -315,6 +337,11 @@ st.markdown("""
         background: linear-gradient(180deg, #FDE68A 0%, #BAE6FD 100%);
         border-radius: 3px;
     }
+
+    /* Modal Minimalist Customization */
+    div[data-testid="stDialog"] div[data-testid="stVerticalBlock"] {
+        gap: 0.8rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -344,32 +371,36 @@ def fetch_members():
         return []
 
 # ---------------------------------------------------------
-# 5. Dialog Function for Member Details Modal
+# 5. Dialog Function for Member Details Modal (Minimalist Style)
 # ---------------------------------------------------------
 def render_member_dialog(m):
-    @st.dialog("📄 รายละเอียดสมาชิก")
+    @st.dialog("รายละเอียดสมาชิก")
     def show_modal():
         if m.get('image_url'):
-            st.image(m['image_url'], use_container_width=True)
+            st.markdown(
+                f'<div style="display: flex; justify-content: center; margin-bottom: 12px;">'
+                f'<img src="{m["image_url"]}" style="width: 100%; max-height: 320px; object-fit: cover; border-radius: 18px; box-shadow: 0 6px 16px rgba(0,0,0,0.06);">'
+                f'</div>',
+                unsafe_allow_html=True
+            )
         
-        st.markdown(f"### {m['name']}")
+        st.markdown(f"<h3 style='margin-bottom: 4px; font-weight: 700; color: #4A443F;'>{m['name']}</h3>", unsafe_allow_html=True)
         
         if m.get('type') == 'คน':
             type_display = 'คน'
         else:
             type_display = f"{m.get('type')} ({m.get('species', '-')})"
             
-        st.markdown(f"**ประเภท:** `{type_display}`")
-        st.markdown(f"**เพศ:** {m['gender']} | **รุ่น:** Gen {m.get('gen_level', 0)}")
-        
-        if m.get('birth_date'):
-            st.markdown(f"**วันเกิด:** {m['birth_date']}")
-        if m.get('father') or m.get('mother'):
-            st.markdown(f"**พ่อ / แม่:** {m.get('father', '-')} / {m.get('mother', '-')}")
-        if m.get('notes'):
-            st.markdown(f"**บันทึกย่อ:** {m['notes']}")
-            
-        st.divider()
+        st.markdown(
+            f"<div style='background: #F5EFE6; padding: 12px 16px; border-radius: 16px; font-size: 0.9rem; color: #5C5248; display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;'>"
+            f"<div><b>ประเภท:</b> {type_display}</div>"
+            f"<div><b>เพศ:</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {m.get('gen_level', 0)}</div>"
+            f"{f'<div><b>วันเกิด:</b> {m[\"birth_date\"]}</div>' if m.get('birth_date') else ''}"
+            f"{f'<div><b>พ่อ / แม่:</b> {m.get(\"father\", \"-\")} / {m.get(\"mother\", \"-\")}</div>' if m.get('father') or m.get('mother') else ''}"
+            f"{f'<div><b>บันทึกย่อ:</b> {m[\"notes\"]}</div>' if m.get('notes') else ''}"
+            f"</div>",
+            unsafe_allow_html=True
+        )
         
         col_del, col_close = st.columns(2)
         with col_del:
