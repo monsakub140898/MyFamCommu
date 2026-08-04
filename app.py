@@ -73,8 +73,15 @@ st.markdown("""
         letter-spacing: 0.05em;
         text-transform: uppercase;
         color: #8C8275;
-        margin: 1rem 0 0.8rem 0;
+        margin: 0.5rem 0 0.8rem 0;
         text-align: center;
+    }
+
+    .input-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #7A6F64;
+        margin-bottom: 4px;
     }
 
     /* =========================================================
@@ -119,17 +126,22 @@ st.markdown("""
     }
 
     /* =========================================================
-       2. ตัวเลือกประเภทสมาชิก (Radio Segmented Control)
+       2. แก้ไข Radio Segmented Control (ซ่อนจุด & ไม่แตกบรรทัด)
        ========================================================= */
     div[data-testid="stRadio"] > div[role="radiogroup"] {
         display: flex !important;
         flex-direction: row !important;
-        gap: 8px !important;
-        background-color: #F5EFE6 !important;
-        padding: 6px !important;
-        border-radius: 18px !important;
+        width: 100% !important;
+        gap: 4px !important;
+        background-color: #F3ECE1 !important;
+        padding: 4px !important;
+        border-radius: 14px !important;
         border: 1px solid #EADBCE !important;
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03) !important;
+    }
+
+    /* ซ่อนวงกลม Radio จุดแดง/เทา */
+    div[data-testid="stRadio"] div[role="radiogroup"] > label > div:first-child {
+        display: none !important;
     }
 
     div[data-testid="stRadio"] label {
@@ -138,66 +150,50 @@ st.markdown("""
         justify-content: center !important;
         align-items: center !important;
         background: transparent !important;
-        padding: 8px 16px !important;
-        border-radius: 12px !important;
-        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        padding: 6px 10px !important;
+        border-radius: 10px !important;
+        transition: all 0.22s ease !important;
         cursor: pointer !important;
         border: none !important;
         margin: 0 !important;
     }
 
-    div[data-testid="stRadio"] label:hover {
-        background: rgba(255, 255, 255, 0.6) !important;
-        transform: translateY(-2px) !important;
+    /* บังคับข้อความไม่ให้แตกบรรทัด */
+    div[data-testid="stRadio"] label [data-testid="stMarkdownContainer"] p {
+        white-space: nowrap !important;
+        font-size: 0.88rem !important;
+        font-weight: 600 !important;
+        color: #6E6359 !important;
     }
 
     div[data-testid="stRadio"] label[data-checked="true"] {
         background: #FFFFFF !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-        font-weight: 700 !important;
-        color: #5C5248 !important;
-        transform: translateY(-1px) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    div[data-testid="stRadio"] label[data-checked="true"] [data-testid="stMarkdownContainer"] p {
+        color: #E11D48 !important;
     }
 
     /* =========================================================
        3. ปุ่มเพิ่ม-ลด Generation (+ / - Buttons)
        ========================================================= */
     div[data-testid="stNumberInput"] div[data-baseweb="input"] {
-        border-radius: 16px !important;
+        border-radius: 14px !important;
         background-color: #FAFAFA !important;
-        border: 1.5px solid #EADBCE !important;
+        border: 1px solid #EADBCE !important;
         overflow: hidden !important;
-        transition: all 0.2s ease !important;
-    }
-
-    div[data-testid="stNumberInput"] div[data-baseweb="input"]:focus-within {
-        border-color: #FFB7B2 !important;
-        box-shadow: 0 0 0 3px rgba(255, 183, 178, 0.25) !important;
     }
 
     div[data-testid="stNumberInput"] button {
         background-color: #FFF0F2 !important;
         color: #E11D48 !important;
         border: 1px solid #FFCCE1 !important;
-        border-radius: 12px !important;
-        margin: 3px !important;
-        width: 36px !important;
-        height: 36px !important;
+        border-radius: 10px !important;
+        margin: 2px !important;
+        width: 32px !important;
+        height: 32px !important;
         font-weight: bold !important;
-        transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04) !important;
-    }
-
-    div[data-testid="stNumberInput"] button:hover {
-        background-color: #FFB7B2 !important;
-        color: #FFFFFF !important;
-        border-color: #FF9AA2 !important;
-        transform: scale(1.12) rotate(4deg) !important;
-        box-shadow: 0 4px 12px rgba(255, 154, 162, 0.45) !important;
-    }
-
-    div[data-testid="stNumberInput"] button:active {
-        transform: scale(0.92) !important;
     }
 
     /* =========================================================
@@ -218,71 +214,12 @@ st.markdown("""
 
     div[data-testid="stFormSubmitButton"] > button:hover {
         background: linear-gradient(135deg, #FF9AA2 0%, #FF8B94 100%) !important;
-        transform: translateY(-3px) scale(1.02) !important;
-        box-shadow: 0 10px 24px rgba(255, 139, 148, 0.55) !important;
-    }
-
-    div[data-testid="stFormSubmitButton"] > button:active {
-        transform: translateY(1px) scale(0.98) !important;
-        box-shadow: 0 3px 10px rgba(255, 139, 148, 0.3) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 22px rgba(255, 139, 148, 0.5) !important;
     }
 
     /* =========================================================
-       5. Modal / Dialog Buttons
-       ========================================================= */
-    div[data-testid="stButton"] > button {
-        border-radius: 14px !important;
-        font-weight: 600 !important;
-        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-        padding: 0.55rem 1rem !important;
-    }
-
-    div[data-testid="stButton"] > button[kind="secondary"] {
-        background: #F4EFE6 !important;
-        color: #5C5248 !important;
-        border: 1px solid #E5DEC9 !important;
-    }
-
-    div[data-testid="stButton"] > button[kind="secondary"]:hover {
-        background: #EAE2D5 !important;
-        transform: translateY(-2px) scale(1.02) !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
-    }
-
-    div[data-testid="stButton"] > button[kind="primary"] {
-        background: linear-gradient(135deg, #FF8080 0%, #FF5252 100%) !important;
-        color: #FFFFFF !important;
-        border: none !important;
-        box-shadow: 0 5px 15px rgba(255, 82, 82, 0.35) !important;
-    }
-
-    div[data-testid="stButton"] > button[kind="primary"]:hover {
-        background: linear-gradient(135deg, #FF6B6B 0%, #E63946 100%) !important;
-        transform: translateY(-2px) scale(1.02) !important;
-        box-shadow: 0 8px 22px rgba(255, 82, 82, 0.48) !important;
-    }
-
-    /* =========================================================
-       6. File Uploader Browse Button
-       ========================================================= */
-    section[data-testid="stFileUploadDropzone"] button {
-        background: linear-gradient(135deg, #BAE6FD 0%, #7DD3FC 100%) !important;
-        color: #0369A1 !important;
-        border: none !important;
-        border-radius: 12px !important;
-        font-weight: 600 !important;
-        padding: 0.5rem 1rem !important;
-        box-shadow: 0 4px 12px rgba(125, 211, 252, 0.4) !important;
-        transition: all 0.25s ease !important;
-    }
-
-    section[data-testid="stFileUploadDropzone"] button:hover {
-        transform: translateY(-2px) scale(1.03) !important;
-        box-shadow: 0 6px 16px rgba(125, 211, 252, 0.6) !important;
-    }
-
-    /* =========================================================
-       7. CSS Pastel Tree Container
+       5. CSS Pastel Tree Container
        ========================================================= */
     .tree-container {
         display: flex;
@@ -498,13 +435,21 @@ with tab1:
         st.markdown(full_tree_html, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# Tab 2: เพิ่มสมาชิกใหม่
+# Tab 2: เพิ่มสมาชิกใหม่ (ปรับแต่ง Layout ใหม่)
 # ---------------------------------------------------------
 with tab2:
-    st.markdown("<p style='font-size: 0.85rem; color: #A09385; margin-bottom: 1rem;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกหรือสัตว์เลี้ยง</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 0.85rem; color: #A09385; margin-bottom: 0.8rem; text-align: center;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกหรือสัตว์เลี้ยง</p>", unsafe_allow_html=True)
     
-    member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
-    gen_level = st.number_input("Generation", min_value=0, max_value=10, value=0)
+    # จัดวาง ประเภทสมาชิก และ Generation ขนานกันแบบ 2 คอลัมน์
+    col_type, col_gen = st.columns([1.1, 0.9])
+    
+    with col_type:
+        st.markdown("<div class='input-label'>ประเภทสมาชิก</div>", unsafe_allow_html=True)
+        member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
+        
+    with col_gen:
+        st.markdown("<div class='input-label'>Generation</div>", unsafe_allow_html=True)
+        gen_level = st.number_input("Generation", min_value=0, max_value=10, value=0, label_visibility="collapsed")
     
     existing_members = fetch_members()
     parent_target_gen = gen_level - 1
@@ -521,6 +466,8 @@ with tab2:
     else:
         father_options = ["- ไม่ระบุ -"]
         mother_options = ["- ไม่ระบุ -"]
+    
+    st.write("") # เกลี่ยระยะห่าง
     
     with st.form("add_member_form", clear_on_submit=True):
         name = st.text_input("ชื่อสมาชิก*")
@@ -582,7 +529,7 @@ with tab2:
                     }
                     
                     supabase.table("members").insert(new_member).execute()
-                    st.success(f"บันทึก {name} เรียบร้อย!")
+                    st.success(f"บันทึก {name} เรียบร้อยแล้ว!")
                     st.rerun()
                 except Exception as e:
                     st.error(f"เกิดข้อผิดพลาด: {e}")
