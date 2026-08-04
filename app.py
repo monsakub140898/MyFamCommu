@@ -85,22 +85,26 @@ st.markdown("""
     }
 
     /* =========================================================
-       1. แท็บเมนู (Tabs Navigation - จัดให้อยู่ตรงกลาง)
+       1. แท็บเมนู (Tabs Navigation - จัดให้อยู่ตรงกลางแบบสมบูรณ์)
        ========================================================= */
     div[data-testid="stTabs"] {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
     }
 
-    div[data-testid="stTabs"] [data-baseweb="tab-list"] {
+    div[data-testid="stTabs"] div[data-baseweb="tab-list"] {
+        display: flex !important;
+        justify-content: center !important;
         gap: 8px !important;
         background-color: #F5EFE6 !important;
         padding: 6px 8px !important;
         border-radius: 20px !important;
         border: 1px solid #EADBCE !important;
         box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03) !important;
-        margin: 0 auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
         width: fit-content !important;
     }
 
@@ -385,8 +389,8 @@ with tab1:
         st.markdown(
             '<div style="text-align: center; padding: 40px 20px; background-color: #FFFFFF; border: 2px solid #F3ECE1; border-radius: 24px; margin-top: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.02);">'
             '<p style="font-size: 2.5rem; margin-bottom: 8px;">🐱🌸🐶</p>'
-            '<p style="color: #5C5248; font-weight: 600; font-size: 1.05rem; margin-bottom: 4px;">ยังไม่มีข้อมูลสมาชิกในบ้าน</p>'
-            '<p style="color: #A09385; font-size: 0.85rem; margin: 0;">กดที่แท็บ <b>"➕ เพิ่มสมาชิก"</b> เพื่อเพิ่มสมาชิก</p>'
+            '<p style="color: #5C5248; font-weight: 600; font-size: 1.05rem; margin-bottom: 4px;">ยังไม่มีข้อมูลสมาชิก</p>'
+            '<p style="color: #A09385; font-size: 0.85rem; margin: 0;">กดที่แท็บ <b>"➕ เพิ่มสมาชิก"</b> เพื่อเพิ่มข้อมูลสมาชิก</p>'
             '</div>', 
             unsafe_allow_html=True
         )
