@@ -76,6 +76,17 @@ st.markdown("""
         margin: 1.5rem 0 0.8rem 0;
     }
 
+    .gen-header {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #D97757;
+        margin-top: 1.2rem;
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
     .member-card {
         background: #FFFFFF;
         border: 1px solid #EAEAE6;
@@ -186,7 +197,7 @@ def fetch_members():
         return []
 
 # ---------------------------------------------------------
-# 5. ฟังก์ชันสร้าง Graphviz DOT Syntax สำหรับวาด Tree
+# 5. ฟังก์ชันสร้าง Graphviz DOT Syntax (แสดงรูปภาพ + แสดงเฉพาะชื่อ)
 # ---------------------------------------------------------
 def generate_family_tree_dot(members):
     if not members:
@@ -201,22 +212,26 @@ def generate_family_tree_dot(members):
     
     name_to_member = {m['name']: m for m in members}
     
-    # 1. วาดกล่อง Node ของแต่ละคน
     for m in members:
         m_id = f"node_{m['id']}".replace("-", "_")
         safe_name = html.escape(m['name'])
-        safe_species = html.escape(m.get('species', ''))
-        safe_gender = html.escape(m.get('gender', ''))
         
+        # แสดงรูปภาพถ้ามี หากไม่มีจะแสดงไอคอนแทน
+        if m.get('image_url'):
+            safe_img_url = html.escape(m['image_url'])
+            img_tag = f'<TR><TD ALIGN="CENTER"><IMG SRC="{safe_img_url}"/></TD></TR>'
+        else:
+            icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
+            img_tag = f'<TR><TD ALIGN="CENTER"><FONT POINT-SIZE="16">{icon}</FONT></TD></TR>'
+            
         label = f'''<
         <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#FFFFFF" COLOR="#D97757" STYLE="ROUNDED">
+            {img_tag}
             <TR><TD ALIGN="CENTER"><FONT POINT-SIZE="11"><B>{safe_name}</B></FONT></TD></TR>
-            <TR><TD ALIGN="CENTER"><FONT POINT-SIZE="8" COLOR="#706F6C">{safe_species} ({safe_gender})</FONT></TD></TR>
         </TABLE>
         >'''
         dot.append(f'    {m_id} [label={label}];')
 
-    # 2. เชื่อมโยงสายเลือด (พ่อ + แม่ -> ลูก)
     unions = {}
     union_counter = 0
 
@@ -261,7 +276,7 @@ def generate_family_tree_dot(members):
 tab1, tab2 = st.tabs(["🌳 ผังครอบครัว", "➕ เพิ่มสมาชิก"])
 
 # ---------------------------------------------------------
-# Tab 1: ผังครอบครัว (Visual Family Tree)
+# Tab 1: ผังครอบครัว
 # ---------------------------------------------------------
 with tab1:
     data = fetch_members()
@@ -275,7 +290,7 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
     else:
-        # ส่วนที่ 1: แสดงแผนผังต้นไม้ (Family Tree Diagram)
+        # 1. แสดงแผนผังต้นไม้
         st.markdown("<div class='section-title'>แผนผังสายเลือด (FAMILY TREE)</div>", unsafe_allow_html=True)
         
         dot_code = generate_family_tree_dot(data)
@@ -284,50 +299,58 @@ with tab1:
         
         st.divider()
 
-        # ส่วนที่ 2: รายชื่อสมาชิกทั้งหมด (คลิกเพื่อดูรายละเอียด / ลบสมาชิก)
+        # 2. รายชื่อสมาชิกทั้งหมด (จัดกลุ่มแยกตาม Generation)
         st.markdown("<div class='section-title'>รายชื่อสมาชิกทั้งหมด</div>", unsafe_allow_html=True)
         
-        for m in data:
-            if m.get('image_url'):
-                img_html = f"<img src='{m['image_url']}' class='avatar-img'>"
-            else:
-                icon = '🐱' if m['type'] == 'สัตว์เลี้ยง' else '👤'
-                img_html = f"<div class='avatar-placeholder'>{icon}</div>"
+        # ดึงรายชื่อ Gen ที่มีทั้งหมดแบบไม่ซ้ำ และเรียงลำดับ
+        unique_gens = sorted(list(set(m.get('gen_level', 0) for m in data)))
+        
+        for gen in unique_gens:
+            st.markdown(f"<div class='gen-header'>📌 Generation {gen}</div>", unsafe_allow_html=True)
             
-            card_html = f"""
-            <div class="member-card">
-                {img_html}
-                <div style="flex-grow: 1;">
-                    <div class="member-name">
-                        {m['name']}
-                        <span class="badge-tag">Gen {m.get('gen_level', 0)}</span>
-                    </div>
-                    <div class="member-sub">{m['species']} | เพศ: {m['gender']}</div>
-                </div>
-            </div>
-            """
-            st.markdown(card_html, unsafe_allow_html=True)
+            gen_members = [m for m in data if m.get('gen_level', 0) == gen]
             
-            with st.expander(f"ข้อมูลของ {m['name']}"):
+            for m in gen_members:
                 if m.get('image_url'):
-                    st.image(m['image_url'], use_container_width=True)
-                st.write(f"**ประเภท:** {m['type']} ({m['species']})")
-                st.write(f"**เพศ:** {m['gender']} | **รุ่น:** Gen {m['gen_level']}")
-                if m.get('birth_date'):
-                    st.write(f"**วันเกิด:** {m['birth_date']}")
-                if m.get('father') or m.get('mother'):
-                    st.write(f"**พ่อ-แม่:** {m.get('father', '-')} / {m.get('mother', '-')}")
-                if m.get('notes'):
-                    st.write(f"**บันทึก:** {m['notes']}")
+                    img_html = f"<img src='{m['image_url']}' class='avatar-img'>"
+                else:
+                    icon = '🐱' if m['type'] == 'สัตว์เลี้ยง' else '👤'
+                    img_html = f"<div class='avatar-placeholder'>{icon}</div>"
                 
-                st.divider()
-                if st.button(f"🗑️ ลบ {m['name']}", key=f"del_{m['id']}", use_container_width=True):
-                    try:
-                        supabase.table("members").delete().eq("id", m["id"]).execute()
-                        st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"เกิดข้อผิดพลาด: {e}")
+                card_html = f"""
+                <div class="member-card">
+                    {img_html}
+                    <div style="flex-grow: 1;">
+                        <div class="member-name">
+                            {m['name']}
+                            <span class="badge-tag">{m['type']}</span>
+                        </div>
+                        <div class="member-sub">{m['species']} | เพศ: {m['gender']}</div>
+                    </div>
+                </div>
+                """
+                st.markdown(card_html, unsafe_allow_html=True)
+                
+                with st.expander(f"ข้อมูลของ {m['name']}"):
+                    if m.get('image_url'):
+                        st.image(m['image_url'], use_container_width=True)
+                    st.write(f"**ประเภท:** {m['type']} ({m['species']})")
+                    st.write(f"**เพศ:** {m['gender']} | **รุ่น:** Gen {m['gen_level']}")
+                    if m.get('birth_date'):
+                        st.write(f"**วันเกิด:** {m['birth_date']}")
+                    if m.get('father') or m.get('mother'):
+                        st.write(f"**พ่อ-แม่:** {m.get('father', '-')} / {m.get('mother', '-')}")
+                    if m.get('notes'):
+                        st.write(f"**บันทึก:** {m['notes']}")
+                    
+                    st.divider()
+                    if st.button(f"🗑️ ลบ {m['name']}", key=f"del_{m['id']}", use_container_width=True):
+                        try:
+                            supabase.table("members").delete().eq("id", m["id"]).execute()
+                            st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"เกิดข้อผิดพลาด: {e}")
 
 # ---------------------------------------------------------
 # Tab 2: เพิ่มสมาชิกใหม่
@@ -337,8 +360,19 @@ with tab2:
     
     member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
     
+    gen_level = st.number_input("Generation (0=รุ่นแรกสุด, 1=รุ่นลูก, 2=รุ่นหลาน)", min_value=0, max_value=10, value=0)
+    
     existing_members = fetch_members()
-    member_names = ["- ไม่ระบุ -"] + [m["name"] for m in existing_members]
+    
+    father_options = ["- ไม่ระบุ -"] + [
+        m["name"] for m in existing_members 
+        if m.get("gender") in ["ชาย", "ผู้"] and m.get("gen_level", 0) < gen_level
+    ]
+    
+    mother_options = ["- ไม่ระบุ -"] + [
+        m["name"] for m in existing_members 
+        if m.get("gender") in ["หญิง", "เมีย"] and m.get("gen_level", 0) < gen_level
+    ]
     
     with st.form("add_member_form", clear_on_submit=True):
         name = st.text_input("ชื่อสมาชิก*")
@@ -350,8 +384,6 @@ with tab2:
             species = st.selectbox("ชนิดสัตว์เลี้ยง", ["แมว", "หมา", "นก", "กระต่าย", "อื่นๆ"])
             gender = st.selectbox("เพศ", ["ผู้", "เมีย"])
             
-        gen_level = st.number_input("Generation (0=รุ่นแรกสุด, 1=รุ่นลูก, 2=รุ่นหลาน)", min_value=0, max_value=10, value=0)
-        
         birth_date = st.date_input(
             "วัน/เดือน/ปี เกิด", 
             value=None, 
@@ -362,9 +394,9 @@ with tab2:
         
         col_f, col_m = st.columns(2)
         with col_f:
-            father = st.selectbox("เลือกพ่อ", member_names)
+            father = st.selectbox("เลือกพ่อ", father_options)
         with col_m:
-            mother = st.selectbox("เลือกแม่", member_names)
+            mother = st.selectbox("เลือกแม่", mother_options)
             
         notes = st.text_area("บันทึกเพิ่มเติม / พัฒนาการ", placeholder="ใส่บันทึกย่อหรือลักษณะเด่น...")
         uploaded_file = st.file_uploader("📸 รูปถ่ายสมาชิก", type=["jpg", "png", "jpeg"])
