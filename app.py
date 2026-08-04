@@ -228,8 +228,8 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
     else:
-        # 1. แสดงแผนผังสายเลือดแบบ Visual CSS Tree
-        st.markdown("<div class='section-title'>แผนผังสายเลือด (FAMILY TREE)</div>", unsafe_allow_html=True)
+        # 1. แสดงแผนผังแบบ Visual CSS Tree
+        st.markdown("<div class='section-title'>แผนผัง (FAMILY TREE)</div>", unsafe_allow_html=True)
         
         unique_gens = sorted(list(set(m.get('gen_level', 0) for m in data)))
         
@@ -345,9 +345,9 @@ with tab2:
         
         col_f, col_m = st.columns(2)
         with col_f:
-            father = st.selectbox(f"เลือกพ่อ (จาก Gen {parent_target_gen})" if gen_level > 0 else "เลือกพ่อ", father_options)
+            father = st.selectbox(f"เลือกพ่อ {parent_target_gen}" if gen_level > 0 else "เลือกพ่อ", father_options)
         with col_m:
-            mother = st.selectbox(f"เลือกแม่ (จาก Gen {parent_target_gen})" if gen_level > 0 else "เลือกแม่", mother_options)
+            mother = st.selectbox(f"เลือกแม่ {parent_target_gen}" if gen_level > 0 else "เลือกแม่", mother_options)
             
         notes = st.text_area("บันทึกเพิ่มเติม / พัฒนาการ", placeholder="ใส่บันทึกย่อหรือลักษณะเด่น...")
         uploaded_file = st.file_uploader("📸 รูปถ่ายสมาชิก", type=["jpg", "png", "jpeg"])
