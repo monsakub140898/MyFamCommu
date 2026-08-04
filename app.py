@@ -25,6 +25,18 @@ def init_supabase() -> Client:
 
 supabase = init_supabase()
 
+# Initialize Session State for Generation
+if "gen_level" not in st.session_state:
+    st.session_state.gen_level = 0
+
+def dec_gen():
+    if st.session_state.gen_level > 0:
+        st.session_state.gen_level -= 1
+
+def inc_gen():
+    if st.session_state.gen_level < 10:
+        st.session_state.gen_level += 1
+
 # ---------------------------------------------------------
 # 3. Custom Pastel World & Fancy UI CSS
 # ---------------------------------------------------------
@@ -126,20 +138,19 @@ st.markdown("""
     }
 
     /* =========================================================
-       2. แก้ไข Radio Segmented Control (พาสเทลน่ารัก + ซ่อนจุดสนิท)
+       2. Radio Segmented Control (พาสเทลน่ารัก + ซ่อนจุดสนิท)
        ========================================================= */
     div[data-testid="stRadio"] > div[role="radiogroup"] {
         display: flex !important;
         flex-direction: row !important;
         width: 100% !important;
         gap: 4px !important;
-        background-color: #FFF0F3 !important; /* สีพื้นหลังพาสเทลชมพูนม */
+        background-color: #FFF0F3 !important;
         padding: 4px !important;
         border-radius: 16px !important;
         border: 1px solid #FFE2E7 !important;
     }
 
-    /* ซ่อนจุด Radio และ Radio Input ดั้งเดิมทั้งหมด */
     div[data-testid="stRadio"] [role="radiogroup"] label > div:first-child,
     div[data-testid="stRadio"] [role="radiogroup"] label input[type="radio"] {
         display: none !important;
@@ -159,7 +170,6 @@ st.markdown("""
         margin: 0 !important;
     }
 
-    /* สไตล์ข้อความในปุ่ม Radio */
     div[data-testid="stRadio"] label [data-testid="stMarkdownContainer"] p {
         white-space: nowrap !important;
         font-size: 0.88rem !important;
@@ -167,44 +177,51 @@ st.markdown("""
         color: #A08C82 !important;
     }
 
-    /* เมื่อปุ่มถูกเลือก (Active State) */
     div[data-testid="stRadio"] label[data-checked="true"] {
         background: #FFFFFF !important;
         box-shadow: 0 3px 10px rgba(255, 154, 162, 0.35) !important;
     }
 
     div[data-testid="stRadio"] label[data-checked="true"] [data-testid="stMarkdownContainer"] p {
-        color: #FF5E7E !important; /* ตัวหนังสือสีชมพูสดใส */
+        color: #FF5E7E !important;
         font-weight: 700 !important;
     }
 
     /* =========================================================
-       3. ปุ่มเพิ่ม-ลด Generation (+ / - Buttons) กลืนไปกับกล่อง
+       3. Generation Stepper (แยกปุ่ม + / - ออกมาอยู่นอกกรอบข้อความ)
        ========================================================= */
-    div[data-testid="stNumberInput"] div[data-baseweb="input"] {
-        border-radius: 14px !important;
+    /* ซ่อนปุ่ม +/- ดั้งเดิมที่ซ้อนอยู่ข้างใน number_input */
+    div[data-testid="stNumberInput"] button {
+        display: none !important;
+    }
+
+    /* ตกแต่งกรอบตัวเลขตรงกลางให้อยู่สัดส่วนสวยงาม */
+    div[data-testid="stNumberInput"] input {
+        text-align: center !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        color: #4A443F !important;
         background-color: #F8F6F0 !important;
+        border-radius: 14px !important;
         border: 1px solid #EADBCE !important;
     }
 
-    /* ปรับปุ่ม + และ - ให้เปล่าๆ โปร่งใส กลืนไปกับกล่อง */
-    div[data-testid="stNumberInput"] button {
-        background: transparent !important;
-        background-color: transparent !important;
-        color: #8C8275 !important;
-        border: none !important;
-        box-shadow: none !important;
-        border-radius: 8px !important;
-        margin: 0 2px !important;
-        width: 28px !important;
-        height: 28px !important;
-        font-weight: bold !important;
-        transition: background-color 0.2s ease !important;
+    /* ตกแต่งปุ่ม + และ - นอกกรอบให้แยกเป็นปุ่มทรงแคปซูล/สี่เหลี่ยมมน */
+    div[data-testid="stColumn"] button[kind="secondary"] {
+        background-color: #FFF0F3 !important;
+        color: #FF5E7E !important;
+        border: 1px solid #FFE2E7 !important;
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        box-shadow: 0 2px 6px rgba(255, 154, 162, 0.15) !important;
+        transition: all 0.2s ease !important;
     }
 
-    div[data-testid="stNumberInput"] button:hover {
-        background-color: rgba(0, 0, 0, 0.05) !important;
-        color: #4A443F !important;
+    div[data-testid="stColumn"] button[kind="secondary"]:hover {
+        background-color: #FFDDE2 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 10px rgba(255, 154, 162, 0.25) !important;
     }
 
     /* =========================================================
@@ -453,7 +470,7 @@ with tab1:
 with tab2:
     st.markdown("<p style='font-size: 0.85rem; color: #A09385; margin-bottom: 0.8rem; text-align: center;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกหรือสัตว์เลี้ยง</p>", unsafe_allow_html=True)
     
-    col_type, col_gen = st.columns([1.1, 0.9])
+    col_type, col_gen = st.columns([1.0, 1.0])
     
     with col_type:
         st.markdown("<div class='input-label'>ประเภทสมาชิก</div>", unsafe_allow_html=True)
@@ -461,7 +478,21 @@ with tab2:
         
     with col_gen:
         st.markdown("<div class='input-label'>Generation</div>", unsafe_allow_html=True)
-        gen_level = st.number_input("Generation", min_value=0, max_value=10, value=0, label_visibility="collapsed")
+        
+        # เลย์เอาต์แยก 3 ช่อง: [ - ] [ 0 ] [ + ]
+        g_dec, g_val, g_inc = st.columns([0.8, 1.4, 0.8])
+        with g_dec:
+            st.button("➖", key="btn_dec_gen", on_click=dec_gen, use_container_width=True)
+        with g_val:
+            gen_level = st.number_input(
+                "Generation", 
+                min_value=0, 
+                max_value=10, 
+                key="gen_level", 
+                label_visibility="collapsed"
+            )
+        with g_inc:
+            st.button("➕", key="btn_inc_gen", on_click=inc_gen, use_container_width=True)
     
     existing_members = fetch_members()
     parent_target_gen = gen_level - 1
@@ -541,7 +572,7 @@ with tab2:
                     }
                     
                     supabase.table("members").insert(new_member).execute()
-                    st.success(f"บันทึก {name} เรียบร้อยแล้ว!")
+                    st.success(f"บันทึก {name} เรียบร้อยแล้ว")
                     st.rerun()
                 except Exception as e:
                     st.error(f"เกิดข้อผิดพลาด: {e}")
