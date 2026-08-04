@@ -188,8 +188,27 @@ st.markdown("""
     }
 
     /* =========================================================
-       3. Main Submit Form Button
+       3. Buttons & Submit Form Button (Centered & Styled)
        ========================================================= */
+    div.stButton {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+
+    div.stButton > button {
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        transition: all 0.25s ease !important;
+        width: 100% !important;
+    }
+
+    div[data-testid="stFormSubmitButton"] {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+
     div[data-testid="stFormSubmitButton"] > button {
         background: linear-gradient(135deg, #FF5E7E 0%, #FF3366 100%) !important;
         color: #FFFFFF !important;
@@ -199,6 +218,7 @@ st.markdown("""
         font-size: 0.92rem !important;
         padding: 0.6rem 1rem !important;
         min-height: 44px !important;
+        width: 100% !important;
         box-shadow: 0 6px 16px rgba(255, 94, 126, 0.4) !important;
         transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
         cursor: pointer !important;
