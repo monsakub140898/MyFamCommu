@@ -374,8 +374,8 @@ def render_member_dialog(m):
     def show_modal():
         if m.get('image_url'):
             st.markdown(
-                f'<div style="display: flex; justify-content: center; margin-bottom: 12px;">'
-                f'<img src="{m["image_url"]}" style="width: 100%; max-height: 320px; object-fit: cover; border-radius: 18px; box-shadow: 0 6px 16px rgba(0,0,0,0.06);">'
+                f'<div style="display: flex; justify-content: center; background: #FAF7F2; border-radius: 18px; overflow: hidden; margin-bottom: 12px; border: 1px solid #EADBCE;">'
+                f'<img src="{m["image_url"]}" style="width: 100%; height: auto; display: block; object-fit: contain;">'
                 f'</div>',
                 unsafe_allow_html=True
             )
@@ -387,14 +387,14 @@ def render_member_dialog(m):
         else:
             type_display = f"{m.get('type')} ({m.get('species', '-')})"
             
-        # แยกตัวแปร HTML เพื่อป้องกัน SyntaxError จากการซ้อน f-string
         birth_date_html = f"<div><b>วันเกิด:</b> {m['birth_date']}</div>" if m.get('birth_date') else ""
         parents_html = f"<div><b>พ่อ / แม่:</b> {m.get('father', '-')} / {m.get('mother', '-')}</div>" if (m.get('father') or m.get('mother')) else ""
         notes_html = f"<div><b>บันทึกย่อ:</b> {m['notes']}</div>" if m.get('notes') else ""
 
+        # ปรับกล่องข้อมูลให้เป็นพื้นหลังสีขาวสะอาดตา ตัดขอบเรียบหรู ดู Minimal
         st.markdown(
             f"""
-            <div style='background: #F5EFE6; padding: 12px 16px; border-radius: 16px; font-size: 0.9rem; color: #5C5248; display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;'>
+            <div style='background: #FFFFFF; border: 1.5px solid #EADBCE; padding: 14px 16px; border-radius: 16px; font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);'>
                 <div><b>ประเภท:</b> {type_display}</div>
                 <div><b>เพศ:</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {m.get('gen_level', 0)}</div>
                 {birth_date_html}
