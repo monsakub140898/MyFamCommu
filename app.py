@@ -126,21 +126,22 @@ st.markdown("""
     }
 
     /* =========================================================
-       2. แก้ไข Radio Segmented Control (ซ่อนจุด & ไม่แตกบรรทัด)
+       2. แก้ไข Radio Segmented Control (พาสเทลน่ารัก + ซ่อนจุดสนิท)
        ========================================================= */
     div[data-testid="stRadio"] > div[role="radiogroup"] {
         display: flex !important;
         flex-direction: row !important;
         width: 100% !important;
         gap: 4px !important;
-        background-color: #F3ECE1 !important;
+        background-color: #FFF0F3 !important; /* สีพื้นหลังพาสเทลชมพูนม */
         padding: 4px !important;
-        border-radius: 14px !important;
-        border: 1px solid #EADBCE !important;
+        border-radius: 16px !important;
+        border: 1px solid #FFE2E7 !important;
     }
 
-    /* ซ่อนวงกลม Radio จุดแดง/เทา */
-    div[data-testid="stRadio"] div[role="radiogroup"] > label > div:first-child {
+    /* ซ่อนจุด Radio และ Radio Input ดั้งเดิมทั้งหมด */
+    div[data-testid="stRadio"] [role="radiogroup"] label > div:first-child,
+    div[data-testid="stRadio"] [role="radiogroup"] label input[type="radio"] {
         display: none !important;
     }
 
@@ -150,50 +151,60 @@ st.markdown("""
         justify-content: center !important;
         align-items: center !important;
         background: transparent !important;
-        padding: 6px 10px !important;
-        border-radius: 10px !important;
-        transition: all 0.22s ease !important;
+        padding: 6px 12px !important;
+        border-radius: 12px !important;
+        transition: all 0.25s ease !important;
         cursor: pointer !important;
         border: none !important;
         margin: 0 !important;
     }
 
-    /* บังคับข้อความไม่ให้แตกบรรทัด */
+    /* สไตล์ข้อความในปุ่ม Radio */
     div[data-testid="stRadio"] label [data-testid="stMarkdownContainer"] p {
         white-space: nowrap !important;
         font-size: 0.88rem !important;
         font-weight: 600 !important;
-        color: #6E6359 !important;
+        color: #A08C82 !important;
     }
 
+    /* เมื่อปุ่มถูกเลือก (Active State) */
     div[data-testid="stRadio"] label[data-checked="true"] {
         background: #FFFFFF !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 3px 10px rgba(255, 154, 162, 0.35) !important;
     }
 
     div[data-testid="stRadio"] label[data-checked="true"] [data-testid="stMarkdownContainer"] p {
-        color: #E11D48 !important;
+        color: #FF5E7E !important; /* ตัวหนังสือสีชมพูสดใส */
+        font-weight: 700 !important;
     }
 
     /* =========================================================
-       3. ปุ่มเพิ่ม-ลด Generation (+ / - Buttons)
+       3. ปุ่มเพิ่ม-ลด Generation (+ / - Buttons) กลืนไปกับกล่อง
        ========================================================= */
     div[data-testid="stNumberInput"] div[data-baseweb="input"] {
         border-radius: 14px !important;
-        background-color: #FAFAFA !important;
+        background-color: #F8F6F0 !important;
         border: 1px solid #EADBCE !important;
-        overflow: hidden !important;
     }
 
+    /* ปรับปุ่ม + และ - ให้เปล่าๆ โปร่งใส กลืนไปกับกล่อง */
     div[data-testid="stNumberInput"] button {
-        background-color: #FFF0F2 !important;
-        color: #E11D48 !important;
-        border: 1px solid #FFCCE1 !important;
-        border-radius: 10px !important;
-        margin: 2px !important;
-        width: 32px !important;
-        height: 32px !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        color: #8C8275 !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 8px !important;
+        margin: 0 2px !important;
+        width: 28px !important;
+        height: 28px !important;
         font-weight: bold !important;
+        transition: background-color 0.2s ease !important;
+    }
+
+    div[data-testid="stNumberInput"] button:hover {
+        background-color: rgba(0, 0, 0, 0.05) !important;
+        color: #4A443F !important;
     }
 
     /* =========================================================
@@ -329,7 +340,7 @@ def fetch_members():
         return []
 
 # ---------------------------------------------------------
-# 5. Dialog Function for Member Details Modal (ปรับปรุงการลบรูป)
+# 5. Dialog Function for Member Details Modal
 # ---------------------------------------------------------
 def render_member_dialog(m):
     @st.dialog("📄 รายละเอียดสมาชิก")
@@ -354,21 +365,15 @@ def render_member_dialog(m):
         with col_del:
             if st.button("🗑️ ลบข้อมูล", key=f"modal_del_{m['id']}", use_container_width=True, type="primary"):
                 try:
-                    # 1. ลบรูปภาพใน Supabase Storage ก่อน
                     if m.get('image_url'):
                         try:
-                            # ดึงชื่อไฟล์ และตัด query parameters ออก (ถ้ามี)
                             raw_filename = m['image_url'].split('/')[-1]
                             file_name = raw_filename.split('?')[0]
-                            
-                            # สั่งลบไฟล์ออกจาก bucket
-                            res = supabase.storage.from_("fam-photos").remove([file_name])
+                            supabase.storage.from_("fam-photos").remove([file_name])
                         except Exception as img_err:
                             st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้: {img_err}")
                     
-                    # 2. ลบข้อมูลจาก Database ตาราง members
                     supabase.table("members").delete().eq("id", m["id"]).execute()
-                    
                     st.success(f"ลบ {m['name']} เรียบร้อยแล้วครับ")
                     st.query_params.clear()
                     st.rerun()
@@ -398,7 +403,7 @@ with tab1:
             '<div style="text-align: center; padding: 40px 20px; background-color: #FFFFFF; border: 2px solid #F3ECE1; border-radius: 24px; margin-top: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.02);">'
             '<p style="font-size: 2.5rem; margin-bottom: 8px;">🐱🌸🐶</p>'
             '<p style="color: #5C5248; font-weight: 600; font-size: 1.05rem; margin-bottom: 4px;">ยังไม่มีข้อมูลสมาชิกในบ้าน</p>'
-            '<p style="color: #A09385; font-size: 0.85rem; margin: 0;">กดที่แท็บ <b>"➕ เพิ่มสมาชิก"</b> เพื่อเริ่มการเพิ่มสมาชิก</p>'
+            '<p style="color: #A09385; font-size: 0.85rem; margin: 0;">กดที่แท็บ <b>"➕ เพิ่มสมาชิก"</b> เพื่อเพิ่มสมาชิก</p>'
             '</div>', 
             unsafe_allow_html=True
         )
@@ -443,12 +448,11 @@ with tab1:
         st.markdown(full_tree_html, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# Tab 2: เพิ่มสมาชิกใหม่ (ปรับแต่ง Layout ใหม่)
+# Tab 2: เพิ่มสมาชิกใหม่
 # ---------------------------------------------------------
 with tab2:
     st.markdown("<p style='font-size: 0.85rem; color: #A09385; margin-bottom: 0.8rem; text-align: center;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกหรือสัตว์เลี้ยง</p>", unsafe_allow_html=True)
     
-    # จัดวาง ประเภทสมาชิก และ Generation ขนานกันแบบ 2 คอลัมน์
     col_type, col_gen = st.columns([1.1, 0.9])
     
     with col_type:
@@ -475,7 +479,7 @@ with tab2:
         father_options = ["- ไม่ระบุ -"]
         mother_options = ["- ไม่ระบุ -"]
     
-    st.write("") # เกลี่ยระยะห่าง
+    st.write("")
     
     with st.form("add_member_form", clear_on_submit=True):
         name = st.text_input("ชื่อสมาชิก*")
