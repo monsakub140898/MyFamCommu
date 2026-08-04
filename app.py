@@ -209,25 +209,25 @@ st.markdown("""
         border-color: #B2C8C3 !important;
     }
 
-    /* ปุ่มแก้ไขข้อมูล -> สีฟ้าอ่อนพาสเทลที่ชัดเจนและขนาดเท่ากันเป๊ะ */
-    .pastel-blue-btn button {
-        background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%) !important;
-        color: #0284C7 !important;
-        border: 1.5px solid #7DD3FC !important;
+    /* ปุ่มแก้ไขข้อมูล -> สีฟ้าพาสเทลละมุนสวยงาม (Soft Sky Blue) และขนาดเท่ากันเป๊ะ */
+    div.pastel-blue-btn button {
+        background: linear-gradient(135deg, #E1F5FE 0%, #B3E5FC 100%) !important;
+        color: #0277BD !important;
+        border: 1.5px solid #81D4FA !important;
         border-radius: 14px !important;
         font-weight: 600 !important;
         font-size: 0.9rem !important;
         padding: 0.5rem 0.8rem !important;
         min-height: 44px !important;
         width: 100% !important;
-        box-shadow: 0 4px 12px rgba(186, 230, 253, 0.4) !important;
+        box-shadow: 0 4px 12px rgba(179, 229, 252, 0.4) !important;
         transition: all 0.25s ease !important;
     }
 
-    .pastel-blue-btn button:hover {
-        background: linear-gradient(135deg, #BAE6FD 0%, #38BDF8 100%) !important;
-        color: #0369A1 !important;
-        border-color: #0284C7 !important;
+    div.pastel-blue-btn button:hover {
+        background: linear-gradient(135deg, #B3E5FC 0%, #4FC3F7 100%) !important;
+        color: #01579B !important;
+        border-color: #4FC3F7 !important;
         transform: translateY(-1px) !important;
     }
 
@@ -420,8 +420,8 @@ def render_member_dialog(m):
             st.markdown("<div class='section-title'>✨ ตรวจสอบข้อมูลก่อนยืนยันการแก้ไข</div>", unsafe_allow_html=True)
             st.markdown(
                 f"""
-                <div style='background: #FFFFFF; border: 2px solid #BAE6FD; padding: 18px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 8px 20px rgba(186, 230, 253, 0.25);'>
-                    <div style='font-size: 1.05rem; font-weight: 700; color: #0369A1; margin-bottom: 10px; text-align: center; border-bottom: 1px solid #E0F2FE; padding-bottom: 8px;'>📋 ข้อมูลที่แก้ไขใหม่</div>
+                <div style='background: #FFFFFF; border: 2px solid #81D4FA; padding: 18px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 8px 20px rgba(129, 212, 250, 0.25);'>
+                    <div style='font-size: 1.05rem; font-weight: 700; color: #01579B; margin-bottom: 10px; text-align: center; border-bottom: 1px solid #E1F5FE; padding-bottom: 8px;'>📋 ข้อมูลที่แก้ไขใหม่</div>
                     <div style='font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 6px;'>
                         <div><b>ชื่อ :</b> {pem['name']}</div>
                         <div><b>ประเภท :</b> {pem['type']} ({pem['species']})</div>
@@ -587,7 +587,7 @@ def render_member_dialog(m):
                                 file_name = raw_filename.split('?')[0]
                                 supabase.storage.from_("fam-photos").remove([file_name])
                             except Exception as img_err:
-                                st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้: {img_err}")
+                                st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้ : {img_err}")
                         
                         supabase.table("members").delete().eq("id", m["id"]).execute()
                         st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
@@ -771,7 +771,7 @@ with tab2:
                     st.session_state.pending_member_data = None
                     st.rerun()
                 except Exception as e:
-                    st.error(f"เกิดข้อผิดพลาด: {e}")
+                    st.error(f"เกิดข้อผิดพลาด : {e}")
         with col_save_no:
             if st.button("✕ ยกเลิก", key="save_confirm_no", use_container_width=True):
                 st.session_state.show_save_confirm = False
