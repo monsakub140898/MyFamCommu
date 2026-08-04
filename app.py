@@ -26,7 +26,7 @@ def init_supabase() -> Client:
 supabase = init_supabase()
 
 # ---------------------------------------------------------
-# 3. Custom Minimalist CSS (Claude Aesthetic + CSS Tree Layout)
+# 3. Custom Minimalist CSS
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -88,8 +88,8 @@ st.markdown("""
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 20px;
-        padding: 15px 0;
+        gap: 16px;
+        padding: 20px 10px;
         background: #FFFFFF;
         border: 1px solid #EAEAE6;
         border-radius: 16px;
@@ -102,7 +102,6 @@ st.markdown("""
         gap: 16px;
         flex-wrap: wrap;
         width: 100%;
-        position: relative;
     }
 
     .tree-node {
@@ -113,7 +112,7 @@ st.markdown("""
         border: 1px solid #EFEFEA;
         border-radius: 12px;
         padding: 10px 14px;
-        min-width: 90px;
+        min-width: 85px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
@@ -153,9 +152,8 @@ st.markdown("""
 
     .tree-connector {
         width: 2px;
-        height: 16px;
+        height: 14px;
         background-color: #D97757;
-        margin: -10px 0;
     }
 
     /* Tabs Style */
@@ -231,20 +229,20 @@ with tab1:
         """, unsafe_allow_html=True)
     else:
         # ---------------------------------------------------------
-        # 1. แสดงแผนผังสายเลือดแบบ Visual CSS Tree (รองรับรูปถ่าย 100%)
+        # 1. แสดงแผนผังสายเลือดแบบ Visual CSS Tree (รวบเป็น Compact HTML)
         # ---------------------------------------------------------
         st.markdown("<div class='section-title'>แผนผังสายเลือด (FAMILY TREE)</div>", unsafe_allow_html=True)
         
         unique_gens = sorted(list(set(m.get('gen_level', 0) for m in data)))
         
-        tree_html = "<div class='tree-container'>"
+        tree_blocks = ["<div class='tree-container'>"]
         for idx, gen in enumerate(unique_gens):
             gen_members = [m for m in data if m.get('gen_level', 0) == gen]
             
             if idx > 0:
-                tree_html += "<div class='tree-connector'></div>"
+                tree_blocks.append("<div class='tree-connector'></div>")
                 
-            tree_html += "<div class='tree-level'>"
+            tree_blocks.append("<div class='tree-level'>")
             for m in gen_members:
                 if m.get('image_url'):
                     avatar_html = f"<img src='{m['image_url']}' class='tree-avatar-img'>"
@@ -252,21 +250,20 @@ with tab1:
                     icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
                     avatar_html = f"<div class='tree-avatar-placeholder'>{icon}</div>"
                 
-                tree_html += f"""
-                <div class='tree-node'>
-                    {avatar_html}
-                    <div class='tree-node-name'>{m['name']}</div>
-                    <div class='tree-node-sub'>Gen {m.get('gen_level', 0)}</div>
-                </div>
-                """
-            tree_html += "</div>"
-        tree_html += "</div>"
+                # เขียนแบบบรรทัดเดียว ป้องกัน Streamlit ตีความการเว้นวรรคผิดเป็น Code Block
+                tree_blocks.append(f"<div class='tree-node'>{avatar_html}<div class='tree-node-name'>{m['name']}</div><div class='tree-node-sub'>Gen {m.get('gen_level', 0)}</div></div>")
+            
+            tree_blocks.append("</div>")
+        tree_blocks.append("</div>")
         
-        st.markdown(tree_html, unsafe_allow_html=True)
+        # รวมเป็น HTML String แบบไม่มีขึ้นบรรทัดใหม่
+        full_tree_html = "".join(tree_blocks)
+        st.markdown(full_tree_html, unsafe_allow_html=True)
+        
         st.divider()
 
         # ---------------------------------------------------------
-        # 2. รายชื่อสมาชิกทั้งหมด (คลิกที่แถบชื่อเพื่อดูข้อมูล/ลบข้อมูล)
+        # 2. รายชื่อสมาชิกทั้งหมด (คลิกแถบชื่อเพื่อดูข้อมูล/ลบข้อมูล)
         # ---------------------------------------------------------
         st.markdown("<div class='section-title'>รายชื่อสมาชิกทั้งหมด</div>", unsafe_allow_html=True)
         
@@ -277,7 +274,6 @@ with tab1:
             for m in gen_members:
                 icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
                 
-                # กดที่แถบชื่อเพื่อเปิดดูข้อมูลและปุ่มลบได้เลย ไม่ต้องมีปุ่ม "ข้อมูลของ..." ซ้ำซ้อน
                 with st.expander(f"{icon} {m['name']} ({m['species']})"):
                     if m.get('image_url'):
                         st.image(m['image_url'], use_container_width=True)
@@ -293,7 +289,6 @@ with tab1:
                     
                     st.divider()
                     
-                    # ปุ่มลบข้อมูล (พร้อมลบรูปถ่ายใน Supabase Storage อัตโนมัติ)
                     if st.button(f"🗑️ ลบ {m['name']}", key=f"del_{m['id']}", use_container_width=True):
                         try:
                             # 1. ลบรูปถ่ายออกจาก Storage (ถ้ามี)
