@@ -26,7 +26,7 @@ def init_supabase() -> Client:
 supabase = init_supabase()
 
 # ---------------------------------------------------------
-# 3. Custom Pastel World & Fancy UI CSS
+# 3. Custom Pastel World & Smooth Font CSS
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -34,10 +34,11 @@ st.markdown("""
     footer {visibility: hidden;}
     #MainMenu {visibility: hidden;}
     
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap');
+    /* เปลี่ยนมาใช้ฟอนต์ Outfit คู่กับ Mitr เพื่อความสมูท ละมุน และดูเป็นกันเองมากขึ้น */
+    @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap');
     
     html, body, [class*="css"] {
-        font-family: 'Fredoka', 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family: 'Outfit', 'Mitr', -apple-system, BlinkMacSystemFont, sans-serif;
         background-color: #FAF7F2;
         color: #4A443F;
     }
