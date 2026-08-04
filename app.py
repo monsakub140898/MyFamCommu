@@ -394,7 +394,7 @@ def render_member_dialog(m):
                             st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้: {img_err}")
                     
                     supabase.table("members").delete().eq("id", m["id"]).execute()
-                    st.success(f"ลบ {m['name']} เรียบร้อยแล้ว)
+                    st.success(f"ลบ {m['name']} เรียบร้อยแล้วครับ")
                     st.query_params.clear()
                     st.rerun()
                 except Exception as e:
