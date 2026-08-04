@@ -26,7 +26,7 @@ def init_supabase() -> Client:
 supabase = init_supabase()
 
 # ---------------------------------------------------------
-# 3. Custom Warm Minimalist & Interactive Tree CSS
+# 3. Custom Pastel World & Fancy All Buttons CSS
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -38,8 +38,8 @@ st.markdown("""
     
     html, body, [class*="css"] {
         font-family: 'Fredoka', 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
-        background-color: #FAF8F5;
-        color: #33322E;
+        background-color: #FAF7F2;
+        color: #4A443F;
     }
 
     .block-container {
@@ -51,55 +51,222 @@ st.markdown("""
 
     /* Header Styling */
     .app-title {
-        font-size: 1.7rem;
+        font-size: 1.8rem;
         font-weight: 700;
-        color: #2D2B28;
+        color: #5C5248;
         letter-spacing: -0.01em;
         text-align: center;
         margin-bottom: 2px;
     }
     
     .app-subtitle {
-        font-size: 0.85rem;
-        color: #9C968E;
+        font-size: 0.88rem;
+        color: #A09385;
         text-align: center;
         margin-bottom: 1.5rem;
-        font-weight: 400;
+        font-weight: 500;
     }
 
     .section-title {
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         font-weight: 600;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
-        color: #A39B91;
+        color: #8C8275;
         margin: 1rem 0 0.8rem 0;
         text-align: center;
     }
 
-    /* CSS Visual Family Tree Styles */
+    /* ----------------------------------------------------- */
+    /* 🎨 1. Fancy Pastel Tabs Navigation                     */
+    /* ----------------------------------------------------- */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+        background-color: #EFE9E0;
+        padding: 8px;
+        border-radius: 20px;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        border: 1px solid #E5DEC9;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 14px;
+        padding: 10px 22px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #8C8275;
+        border: none;
+        background: transparent;
+        transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .stTabs [data-baseweb="tab"]:hover {
+        color: #E11D48 !important;
+        transform: translateY(-2px) scale(1.03);
+    }
+
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #FFB7B2 0%, #FFDAC1 100%) !important;
+        color: #8D2B44 !important;
+        box-shadow: 0 6px 18px rgba(255, 154, 162, 0.45) !important;
+        transform: translateY(-3px) scale(1.04);
+    }
+
+    .stTabs [data-baseweb="tab-highlight-title"] {
+        display: none;
+    }
+
+    /* ----------------------------------------------------- */
+    /* 🎨 2. Main Submit Form Button (Pastel Pink 3D Glow)   */
+    /* ----------------------------------------------------- */
+    div[data-testid="stFormSubmitButton"] > button {
+        background: linear-gradient(135deg, #FFB7B2 0%, #FF9AA2 100%) !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        border-radius: 16px !important;
+        font-weight: 700 !important;
+        font-size: 0.98rem !important;
+        padding: 0.75rem 1.2rem !important;
+        box-shadow: 0 6px 18px rgba(255, 154, 162, 0.4) !important;
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        cursor: pointer !important;
+    }
+
+    div[data-testid="stFormSubmitButton"] > button:hover {
+        background: linear-gradient(135deg, #FF9AA2 0%, #FF8B94 100%) !important;
+        transform: translateY(-3px) scale(1.02) !important;
+        box-shadow: 0 10px 24px rgba(255, 139, 148, 0.55) !important;
+    }
+
+    div[data-testid="stFormSubmitButton"] > button:active {
+        transform: translateY(1px) scale(0.98) !important;
+        box-shadow: 0 3px 10px rgba(255, 139, 148, 0.3) !important;
+    }
+
+    /* ----------------------------------------------------- */
+    /* 🎨 3. Modal / Dialog Buttons (Delete & Close)          */
+    /* ----------------------------------------------------- */
+    div[data-testid="stButton"] > button {
+        border-radius: 14px !important;
+        font-weight: 600 !important;
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        padding: 0.55rem 1rem !important;
+    }
+
+    /* Close / Secondary Button */
+    div[data-testid="stButton"] > button[kind="secondary"] {
+        background: #F4EFE6 !important;
+        color: #5C5248 !important;
+        border: 1px solid #E5DEC9 !important;
+    }
+
+    div[data-testid="stButton"] > button[kind="secondary"]:hover {
+        background: #EAE2D5 !important;
+        transform: translateY(-2px) scale(1.02) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+    }
+
+    /* Delete / Primary Button */
+    div[data-testid="stButton"] > button[kind="primary"] {
+        background: linear-gradient(135deg, #FF8080 0%, #FF5252 100%) !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        box-shadow: 0 5px 15px rgba(255, 82, 82, 0.35) !important;
+    }
+
+    div[data-testid="stButton"] > button[kind="primary"]:hover {
+        background: linear-gradient(135deg, #FF6B6B 0%, #E63946 100%) !important;
+        transform: translateY(-2px) scale(1.02) !important;
+        box-shadow: 0 8px 22px rgba(255, 82, 82, 0.48) !important;
+    }
+
+    /* ----------------------------------------------------- */
+    /* 🎨 4. Radio Buttons Styled as Pill Toggle Switch      */
+    /* ----------------------------------------------------- */
+    div[data-testid="stRadio"] div[role="radiogroup"] {
+        gap: 8px;
+        background-color: #EFE9E0;
+        padding: 6px;
+        border-radius: 16px;
+        border: 1px solid #E5DEC9;
+    }
+
+    div[data-testid="stRadio"] label {
+        background: transparent;
+        padding: 8px 18px !important;
+        border-radius: 12px !important;
+        transition: all 0.25s ease !important;
+        cursor: pointer !important;
+    }
+
+    div[data-testid="stRadio"] label:hover {
+        background: rgba(255,255,255,0.6) !important;
+    }
+
+    div[data-testid="stRadio"] label[data-checked="true"] {
+        background: #FFFFFF !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06) !important;
+        font-weight: 600 !important;
+        color: #5C5248 !important;
+    }
+
+    /* ----------------------------------------------------- */
+    /* 🎨 5. File Uploader Browse Button                      */
+    /* ----------------------------------------------------- */
+    section[data-testid="stFileUploadDropzone"] button {
+        background: linear-gradient(135deg, #BAE6FD 0%, #7DD3FC 100%) !important;
+        color: #0369A1 !important;
+        border: none !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        padding: 0.5rem 1rem !important;
+        box-shadow: 0 4px 12px rgba(125, 211, 252, 0.4) !important;
+        transition: all 0.25s ease !important;
+    }
+
+    section[data-testid="stFileUploadDropzone"] button:hover {
+        transform: translateY(-2px) scale(1.03) !important;
+        box-shadow: 0 6px 16px rgba(125, 211, 252, 0.6) !important;
+    }
+
+    /* ----------------------------------------------------- */
+    /* 🎨 6. Number Input Increment/Decrement (+ / -)        */
+    /* ----------------------------------------------------- */
+    div[data-testid="stNumberInput"] button {
+        background-color: #F4EFE6 !important;
+        border-radius: 10px !important;
+        transition: all 0.2s ease !important;
+        border: 1px solid #E5DEC9 !important;
+    }
+
+    div[data-testid="stNumberInput"] button:hover {
+        background-color: #FFDAC1 !important;
+        color: #8D2B44 !important;
+        transform: scale(1.1) !important;
+    }
+
+    /* CSS Pastel Tree Container */
     .tree-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 16px;
-        padding: 22px 12px;
+        padding: 24px 14px;
         background: #FFFFFF;
-        border: 1.5px solid #F0EAE1;
-        border-radius: 20px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+        border: 2px solid #F3ECE1;
+        border-radius: 24px;
+        box-shadow: 0 10px 25px rgba(235, 222, 208, 0.4);
         margin-bottom: 20px;
     }
 
     .tree-level {
         display: flex;
         justify-content: center;
-        gap: 16px;
+        gap: 14px;
         flex-wrap: wrap;
         width: 100%;
     }
 
-    /* Interactive Clickable Node Wrapper */
     .tree-node-link {
         text-decoration: none !important;
         color: inherit !important;
@@ -110,116 +277,73 @@ st.markdown("""
         display: flex;
         flex-direction: column;
         align-items: center;
-        background: #FAF8F5;
-        border: 1.5px solid #EFEAE1;
-        border-radius: 16px;
+        background: #FFFFFF;
+        border-radius: 18px;
         padding: 12px 14px;
-        min-width: 90px;
-        transition: all 0.2s ease;
+        min-width: 92px;
+        transition: all 0.25s ease;
         cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     }
 
     .tree-node:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 16px rgba(224, 122, 95, 0.18);
-        border-color: #E07A5F;
-        background: #FFFFFF;
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
     .tree-avatar-img {
-        width: 56px;
-        height: 56px;
+        width: 58px;
+        height: 58px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid #FFFFFF;
-        box-shadow: 0 4px 10px rgba(224, 122, 95, 0.25);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
         margin-bottom: 8px;
     }
 
     .tree-avatar-placeholder {
-        width: 56px;
-        height: 56px;
+        width: 58px;
+        height: 58px;
         border-radius: 50%;
-        background-color: #FDF0ED;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         margin-bottom: 8px;
-        border: 3px solid #FFFFFF;
-        box-shadow: 0 4px 10px rgba(224, 122, 95, 0.15);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     }
 
     .tree-node-name {
         font-size: 0.88rem;
         font-weight: 600;
-        color: #2D2B28;
+        color: #4A443F;
         text-align: center;
     }
 
-    .tree-node-badge {
-        font-size: 0.68rem;
-        font-weight: 600;
-        color: #E07A5F;
-        background: #FDF0ED;
-        padding: 2px 8px;
-        border-radius: 10px;
-        margin-top: 4px;
-    }
-
     .tree-connector {
-        width: 2px;
-        height: 16px;
-        background-color: #F2CC8F;
-        border-radius: 2px;
-    }
-
-    /* Tabs Style */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background-color: #F2ECE1;
-        padding: 5px;
-        border-radius: 14px;
-    }
-
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 10px;
-        padding: 8px 18px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #827B73;
-        border: none;
-    }
-
-    .stTabs [aria-selected="true"] {
-        background-color: #FFFFFF !important;
-        color: #2D2B28 !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-    }
-
-    /* Button Customization */
-    div[data-testid="stFormSubmitButton"] > button {
-        background-color: #E07A5F !important;
-        color: #FFFFFF !important;
-        border: none !important;
-        border-radius: 12px !important;
-        font-weight: 600 !important;
-        padding: 0.6rem 1rem !important;
-        box-shadow: 0 4px 12px rgba(224, 122, 95, 0.25) !important;
-        transition: all 0.2s ease;
-    }
-    div[data-testid="stFormSubmitButton"] > button:hover {
-        background-color: #D0694E !important;
-        transform: translateY(-1px);
+        width: 3px;
+        height: 18px;
+        background: linear-gradient(180deg, #FDE68A 0%, #BAE6FD 100%);
+        border-radius: 3px;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
+# Pastel Color Palette System
+# ---------------------------------------------------------
+PASTEL_PALETTE = [
+    {"bg": "#FFF0F2", "color": "#E11D48", "border": "#FFCCE1", "badge_bg": "#FFE4E6"}, # Gen 0: Pink
+    {"bg": "#FEFCE8", "color": "#D97706", "border": "#FEF08A", "badge_bg": "#FEF3C7"}, # Gen 1: Yellow
+    {"bg": "#F0FDF4", "color": "#16A34A", "border": "#BBF7D0", "badge_bg": "#DCFCE7"}, # Gen 2: Green
+    {"bg": "#F0F9FF", "color": "#0284C7", "border": "#BAE6FD", "badge_bg": "#E0F2FE"}, # Gen 3: Blue
+    {"bg": "#FAF5FF", "color": "#9333EA", "border": "#E9D5FF", "badge_bg": "#F3E8FF"}, # Gen 4: Lavender
+]
+
+# ---------------------------------------------------------
 # 4. App Header & Data Fetching
 # ---------------------------------------------------------
 st.markdown("<div class='app-title'>My Fam Commu 🐾</div>", unsafe_allow_html=True)
-st.markdown("<div class='app-subtitle'>บันทึกผังครอบครัว</div>", unsafe_allow_html=True)
+st.markdown("<div class='app-subtitle'>ผังครอบครัว 🌸🌼🩵</div>", unsafe_allow_html=True)
 
 def fetch_members():
     try:
@@ -281,49 +405,59 @@ def render_member_dialog(m):
 tab1, tab2 = st.tabs(["🌳 ผังครอบครัว", "➕ เพิ่มสมาชิก"])
 
 # ---------------------------------------------------------
-# Tab 1: ผังครอบครัว (แสดงเฉพาะแผนผัง + กดดูรายละเอียดได้)
+# Tab 1: ผังครอบครัว
 # ---------------------------------------------------------
 with tab1:
     data = fetch_members()
     
     if not data:
         st.markdown("""
-        <div style="text-align: center; padding: 40px 20px; background-color: #FFFFFF; border: 1.5px solid #F0EAE1; border-radius: 20px; margin-top: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
-            <p style="font-size: 2.2rem; margin-bottom: 8px;">🐶🐱</p>
-            <p style="color: #2D2B28; font-weight: 600; font-size: 1rem; margin-bottom: 4px;">ยังไม่มีข้อมูลสมาชิกในบ้าน</p>
-            <p style="color: #9C968E; font-size: 0.82rem; margin: 0;">กดที่แท็บ <b>"➕ เพิ่มสมาชิก"</b> ด้านบนเพื่อเริ่มเพิ่มข้อมูลคนแรกได้เลยครับ</p>
+        <div style="text-align: center; padding: 40px 20px; background-color: #FFFFFF; border: 2px solid #F3ECE1; border-radius: 24px; margin-top: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.02);">
+            <p style="font-size: 2.5rem; margin-bottom: 8px;">🐱🌸🐶</p>
+            <p style="color: #5C5248; font-weight: 600; font-size: 1.05rem; margin-bottom: 4px;">ยังไม่มีข้อมูลสมาชิกในบ้าน</p>
+            <p style="color: #A09385; font-size: 0.85rem; margin: 0;">กดที่แท็บ <b>"➕ เพิ่มสมาชิก"</b> ด้านบนเพื่อเริ่มเพิ่มสมาชิกคนแรกได้เลยครับ</p>
         </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown("<div class='section-title'>🏡 แผนผัง (คลิกที่รูปเพื่อดูรายละเอียด)</div>", unsafe_allow_html=True)
         
-        # ตรวจสอบว่าผู้ใช้คลิกเลือกสมาชิกคนไหนในแผนผังหรือไม่
         if "selected_id" in st.query_params:
             sel_id = st.query_params["selected_id"]
             selected_m = next((m for m in data if str(m["id"]) == str(sel_id)), None)
             if selected_m:
                 render_member_dialog(selected_m)
         
-        # วาดแผนผังแบบ Clickable Tree Node
         unique_gens = sorted(list(set(m.get('gen_level', 0) for m in data)))
         
         tree_blocks = ["<div class='tree-container'>"]
         for idx, gen in enumerate(unique_gens):
             gen_members = [m for m in data if m.get('gen_level', 0) == gen]
+            theme = PASTEL_PALETTE[gen % len(PASTEL_PALETTE)]
             
             if idx > 0:
                 tree_blocks.append("<div class='tree-connector'></div>")
                 
             tree_blocks.append("<div class='tree-level'>")
             for m in gen_members:
+                card_style = f"background: {theme['bg']}; border: 1.5px solid {theme['border']};"
+                badge_style = f"background: {theme['badge_bg']}; color: {theme['color']}; font-size: 0.68rem; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin-top: 4px;"
+                img_border_style = f"border: 3px solid {theme['border']};"
+                
                 if m.get('image_url'):
-                    avatar_html = f"<img src='{m['image_url']}' class='tree-avatar-img'>"
+                    avatar_html = f"<img src='{m['image_url']}' class='tree-avatar-img' style='{img_border_style}'>"
                 else:
                     icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
-                    avatar_html = f"<div class='tree-avatar-placeholder'>{icon}</div>"
+                    avatar_html = f"<div class='tree-avatar-placeholder' style='background-color: {theme['badge_bg']}; {img_border_style}'>{icon}</div>"
                 
-                # ใส่แท็ก <a> เพื่อให้ครอบการ์ดทั้งหมด คลิกแล้วเปิด Pop-up รายละเอียดทันที
-                node_html = f"<a href='?selected_id={m['id']}' target='_self' class='tree-node-link'><div class='tree-node'>{avatar_html}<div class='tree-node-name'>{m['name']}</div><div class='tree-node-badge'>Gen {m.get('gen_level', 0)}</div></div></a>"
+                node_html = f"""
+                <a href='?selected_id={m['id']}' target='_self' class='tree-node-link'>
+                    <div class='tree-node' style='{card_style}'>
+                        {avatar_html}
+                        <div class='tree-node-name'>{m['name']}</div>
+                        <div style='{badge_style}'>Gen {m.get('gen_level', 0)}</div>
+                    </div>
+                </a>
+                """
                 tree_blocks.append(node_html)
             
             tree_blocks.append("</div>")
@@ -336,14 +470,12 @@ with tab1:
 # Tab 2: เพิ่มสมาชิกใหม่
 # ---------------------------------------------------------
 with tab2:
-    st.markdown("<p style='font-size: 0.85rem; color: #9C968E; margin-bottom: 1rem;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกคนใหม่หรือสัตว์เลี้ยงเข้าบ้านครับ</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 0.85rem; color: #A09385; margin-bottom: 1rem;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกหรือสัตว์เลี้ยง</p>", unsafe_allow_html=True)
     
     member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
-    gen_level = st.number_input("Generation (0=รุ่นแรกสุด, 1=รุ่นลูก, 2=รุ่นหลาน)", min_value=0, max_value=10, value=0)
+    gen_level = st.number_input("Generation", min_value=0, max_value=10, value=0)
     
     existing_members = fetch_members()
-    
-    # ตัวกรองพ่อ-แม่: ดึงเฉพาะสมาชิกจาก Gen ก่อนหน้าตรงๆ 1 รุ่น
     parent_target_gen = gen_level - 1
     
     if gen_level > 0:
