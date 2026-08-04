@@ -181,7 +181,7 @@ st.markdown("""
     }
 
     /* =========================================================
-       3. Minimalist Button & Modal Button Styling
+       3. Button Styling (Custom Secondary & Primary Buttons)
        ========================================================= */
     div.stButton {
         display: flex !important;
@@ -189,10 +189,11 @@ st.markdown("""
         width: 100% !important;
     }
 
+    /* ปุ่มรอง / ปุ่มยกเลิก / ปิด (Secondary) -> สีเขียวพาสเทลละมุน (Soft Sage Green) */
     div.stButton > button:not([kind="primary"]) {
-        background: #F5EFE6 !important;
-        color: #7A6F64 !important;
-        border: 1px solid #EADBCE !important;
+        background: linear-gradient(135deg, #E2ECE9 0%, #D4E2DE) !important;
+        color: #3D5A5B !important;
+        border: 1px solid #C4D6D2 !important;
         border-radius: 14px !important;
         font-weight: 600 !important;
         padding: 0.5rem 1rem !important;
@@ -201,27 +202,28 @@ st.markdown("""
     }
 
     div.stButton > button:not([kind="primary"]):hover {
-        background: #EADBCE !important;
-        color: #5C5248 !important;
-        border-color: #D6C5B4 !important;
+        background: linear-gradient(135deg, #D4E2DE 0%, #C4D6D2) !important;
+        color: #2C4243 !important;
+        border-color: #B2C8C3 !important;
     }
 
+    /* ปุ่มหลัก / ปุ่มยืนยัน / ลบข้อมูล (Primary) -> สีแดงเข้มเด่นชัด (Crimson Red) ตัวหนังสือสีขาว */
     div.stButton > button[kind="primary"] {
-        background: linear-gradient(135deg, #FFB5A7 0%, #FF8FAB 100%) !important;
-        color: #6E3A3A !important;
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+        color: #FFFFFF !important;
         border: none !important;
         border-radius: 14px !important;
         font-weight: 600 !important;
         padding: 0.5rem 1rem !important;
         min-height: 42px !important;
-        box-shadow: 0 4px 12px rgba(255, 143, 171, 0.25) !important;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;
         transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }
 
     div.stButton > button[kind="primary"]:hover {
-        background: linear-gradient(135deg, #FFA293 0%, #FF7597 100%) !important;
+        background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%) !important;
         transform: translateY(-1px) !important;
-        box-shadow: 0 6px 16px rgba(255, 143, 171, 0.4) !important;
+        box-shadow: 0 6px 16px rgba(185, 28, 28, 0.4) !important;
     }
 
     div[data-testid="stFormSubmitButton"] {
@@ -367,7 +369,7 @@ def fetch_members():
         return []
 
 # ---------------------------------------------------------
-# 5. Dialog Function for Member Details Modal (Minimalist Style)
+# 5. Dialog Function for Member Details Modal with Delete Confirmation
 # ---------------------------------------------------------
 def render_member_dialog(m):
     @st.dialog("รายละเอียดสมาชิก")
@@ -389,7 +391,6 @@ def render_member_dialog(m):
         parents_html = f"<div><b>พ่อ / แม่ :</b> {m.get('father', '-')} / {m.get('mother', '-')}</div>" if (m.get('father') or m.get('mother')) else ""
         notes_html = f"<div><b>บันทึกย่อ :</b> {m['notes']}</div>" if m.get('notes') else ""
 
-        # รวมชื่อเข้ามาไว้ในกล่องข้อมูลด้านล่าง พร้อมตกแต่งเส้นคั้นและหัวข้อให้เรียบร้อย
         st.markdown(
             f"""
             <div style='background: #FFFFFF; border: 1.5px solid #EADBCE; padding: 16px; border-radius: 16px; font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);'>
@@ -404,29 +405,51 @@ def render_member_dialog(m):
             unsafe_allow_html=True
         )
         
-        col_del, col_close = st.columns(2)
-        with col_del:
-            if st.button("🗑️ ลบข้อมูล", key=f"modal_del_{m['id']}", use_container_width=True, type="primary"):
-                try:
-                    if m.get('image_url'):
-                        try:
-                            raw_filename = m['image_url'].split('/')[-1]
-                            file_name = raw_filename.split('?')[0]
-                            supabase.storage.from_("fam-photos").remove([file_name])
-                        except Exception as img_err:
-                            st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้: {img_err}")
-                    
-                    supabase.table("members").delete().eq("id", m["id"]).execute()
-                    st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
+        # State key for delete confirmation
+        del_key = f"confirm_del_{m['id']}"
+        if del_key not in st.session_state:
+            st.session_state[del_key] = False
+
+        if not st.session_state[del_key]:
+            col_del, col_close = st.columns(2)
+            with col_del:
+                if st.button("🗑️ ลบข้อมูล", key=f"btn_del_{m['id']}", use_container_width=True, type="primary"):
+                    st.session_state[del_key] = True
+                    st.rerun()
+            with col_close:
+                if st.button("ปิด", key=f"btn_close_{m['id']}", use_container_width=True):
                     st.query_params.clear()
                     st.rerun()
-                except Exception as e:
-                    st.error(f"เกิดข้อผิดพลาดในการลบข้อมูล: {e}")
-                    
-        with col_close:
-            if st.button("ปิด", key="modal_close", use_container_width=True):
-                st.query_params.clear()
-                st.rerun()
+        else:
+            st.markdown(
+                f"<div style='background: #FFF5F5; border: 1.5px solid #FEB2B2; padding: 12px; border-radius: 14px; text-align: center; margin-bottom: 10px; color: #9B2C2C; font-size: 0.88rem; font-weight: 600;'>"
+                f"⚠️ คุณต้องการลบข้อมูลของ <b>{m['name']}</b> ใช่หรือไม่?<br><span style='font-size:0.78rem; font-weight:normal; color:#C53030;'>การกระทำนี้ไม่สามารถย้อนกลับได้</span>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+            col_confirm_del, col_cancel_del = st.columns(2)
+            with col_confirm_del:
+                if st.button("✓ ยืนยันการลบ", key=f"confirm_yes_{m['id']}", use_container_width=True, type="primary"):
+                    try:
+                        if m.get('image_url'):
+                            try:
+                                raw_filename = m['image_url'].split('/')[-1]
+                                file_name = raw_filename.split('?')[0]
+                                supabase.storage.from_("fam-photos").remove([file_name])
+                            except Exception as img_err:
+                                st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้: {img_err}")
+                        
+                        supabase.table("members").delete().eq("id", m["id"]).execute()
+                        st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
+                        st.session_state[del_key] = False
+                        st.query_params.clear()
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"เกิดข้อผิดพลาดในการลบข้อมูล: {e}")
+            with col_cancel_del:
+                if st.button("✕ ยกเลิก", key=f"confirm_no_{m['id']}", use_container_width=True):
+                    st.session_state[del_key] = False
+                    st.rerun()
                 
     show_modal()
 
@@ -491,90 +514,147 @@ with tab1:
         st.markdown(full_tree_html, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# Tab 2: เพิ่มสมาชิกใหม่
+# Tab 2: เพิ่มสมาชิกใหม่ (พร้อมหน้าจอตรวจสอบและยืนยันการบันทึก)
 # ---------------------------------------------------------
 with tab2:
-    st.markdown("<p style='font-size: 0.85rem; color: #A09385; margin-bottom: 0.8rem; text-align: center;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกหรือสัตว์เลี้ยง</p>", unsafe_allow_html=True)
-    
-    col_type, col_gen = st.columns([1.0, 1.0])
-    
-    with col_type:
-        member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
-        
-    with col_gen:
-        gen_level = st.number_input(
-            "Generation", 
-            min_value=1, 
-            max_value=10, 
-            value=1,
-            step=1
+    if "show_save_confirm" not in st.session_state:
+        st.session_state.show_save_confirm = False
+    if "pending_member_data" not in st.session_state:
+        st.session_state.pending_member_data = None
+
+    if st.session_state.show_save_confirm and st.session_state.pending_member_data:
+        pm = st.session_state.pending_member_data
+        st.markdown("<div class='section-title'>✨ ตรวจสอบข้อมูลก่อนยืนยันการบันทึก</div>", unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div style='background: #FFFFFF; border: 2px solid #FFB7B2; padding: 18px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 8px 20px rgba(255, 183, 178, 0.25);'>
+                <div style='font-size: 1.05rem; font-weight: 700; color: #8D2B44; margin-bottom: 10px; text-align: center; border-bottom: 1px solid #FFE4E6; padding-bottom: 8px;'>📋 ข้อมูลสมาชิกใหม่</div>
+                <div style='font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 6px;'>
+                    <div><b>ชื่อ:</b> {pm['name']}</div>
+                    <div><b>ประเภท:</b> {pm['type']} ({pm['species']})</div>
+                    <div><b>เพศ:</b> {pm['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {pm['gen_level']}</div>
+                    <div><b>วันเกิด:</b> {pm['birth_date'] if pm['birth_date'] else '-'}</div>
+                    <div><b>พ่อ / แม่:</b> {pm['father'] if pm['father'] else '-'} / {pm['mother'] if pm['mother'] else '-'}</div>
+                    <div><b>บันทึกเพิ่มเติม:</b> {pm['notes'] if pm['notes'] else '-'}</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
-    
-    existing_members = fetch_members()
-    parent_target_gen = gen_level - 1
-    
-    if gen_level > 1:
-        father_options = ["- ไม่ระบุ -"] + [
-            m["name"] for m in existing_members 
-            if m.get("gender") in ["ชาย", "ผู้"] and m.get("gen_level", 1) == parent_target_gen
-        ]
-        mother_options = ["- ไม่ระบุ -"] + [
-            m["name"] for m in existing_members 
-            if m.get("gender") in ["หญิง", "เมีย"] and m.get("gen_level", 1) == parent_target_gen
-        ]
-    else:
-        father_options = ["- ไม่ระบุ -"]
-        mother_options = ["- ไม่ระบุ -"]
-    
-    st.write("")
-    
-    with st.form("add_member_form", clear_on_submit=True):
-        name = st.text_input("ชื่อสมาชิก*")
-        
-        if member_type == "คน":
-            species = "คน"
-            gender = st.selectbox("เพศ", ["ชาย", "หญิง", "อื่นๆ"])
-        else:
-            species = st.selectbox("ชนิดสัตว์เลี้ยง", ["แมว", "หมา", "นก", "กระต่าย", "อื่นๆ"])
-            gender = st.selectbox("เพศ", ["ผู้", "เมีย"])
-            
-        birth_date = st.date_input(
-            "วัน/เดือน/ปี เกิด", 
-            value=None, 
-            min_value=datetime(1900, 1, 1), 
-            max_value=datetime.now(),
-            format="DD/MM/YYYY"
-        )
-        
-        col_f, col_m = st.columns(2)
-        with col_f:
-            father = st.selectbox(f"เลือกพ่อ (จาก Gen {parent_target_gen})" if gen_level > 1 else "เลือกพ่อ", father_options)
-        with col_m:
-            mother = st.selectbox(f"เลือกแม่ (จาก Gen {parent_target_gen})" if gen_level > 1 else "เลือกแม่", mother_options)
-            
-        notes = st.text_area("บันทึกเพิ่มเติม", placeholder="ใส่บันทึกย่อ นิสัย หรือลักษณะเด่น...")
-        uploaded_file = st.file_uploader("📸 รูปถ่ายสมาชิก", type=["jpg", "png", "jpeg"])
-        
-        submitted = st.form_submit_button("✨ บันทึกข้อมูลสมาชิก", use_container_width=True)
-        
-        if submitted:
-            if not name:
-                st.error("กรุณากรอกชื่อสมาชิก")
-            else:
+
+        col_save_yes, col_save_no = st.columns(2)
+        with col_save_yes:
+            if st.button("✓ ยืนยันการบันทึก", key="save_confirm_yes", use_container_width=True, type="primary"):
                 try:
                     image_url = None
-                    if uploaded_file is not None:
-                        file_ext = uploaded_file.name.split(".")[-1]
+                    if pm['file_bytes'] is not None:
+                        file_ext = pm['file_name'].split(".")[-1]
                         file_path = f"{uuid.uuid4()}.{file_ext}"
-                        
                         supabase.storage.from_("fam-photos").upload(
                             path=file_path,
-                            file=uploaded_file.getvalue(),
-                            file_options={"content-type": uploaded_file.type}
+                            file=pm['file_bytes'],
+                            file_options={"content-type": pm['file_type']}
                         )
                         image_url = supabase.storage.from_("fam-photos").get_public_url(file_path)
                     
                     new_member = {
+                        "name": pm['name'],
+                        "type": pm['type'],
+                        "species": pm['species'],
+                        "gender": pm['gender'],
+                        "gen_level": pm['gen_level'],
+                        "birth_date": pm['birth_date'],
+                        "father": pm['father'],
+                        "mother": pm['mother'],
+                        "notes": pm['notes'],
+                        "image_url": image_url
+                    }
+                    
+                    supabase.table("members").insert(new_member).execute()
+                    st.success(f"บันทึก {pm['name']} เรียบร้อยแล้ว")
+                    st.session_state.show_save_confirm = False
+                    st.session_state.pending_member_data = None
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"เกิดข้อผิดพลาด: {e}")
+        with col_save_no:
+            if st.button("✕ ยกเลิก", key="save_confirm_no", use_container_width=True):
+                st.session_state.show_save_confirm = False
+                st.session_state.pending_member_data = None
+                st.rerun()
+    else:
+        st.markdown("<p style='font-size: 0.85rem; color: #A09385; margin-bottom: 0.8rem; text-align: center;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกหรือสัตว์เลี้ยง</p>", unsafe_allow_html=True)
+        
+        col_type, col_gen = st.columns([1.0, 1.0])
+        
+        with col_type:
+            member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
+            
+        with col_gen:
+            gen_level = st.number_input(
+                "Generation", 
+                min_value=1, 
+                max_value=10, 
+                value=1,
+                step=1
+            )
+        
+        existing_members = fetch_members()
+        parent_target_gen = gen_level - 1
+        
+        if gen_level > 1:
+            father_options = ["- ไม่ระบุ -"] + [
+                m["name"] for m in existing_members 
+                if m.get("gender") in ["ชาย", "ผู้"] and m.get("gen_level", 1) == parent_target_gen
+            ]
+            mother_options = ["- ไม่ระบุ -"] + [
+                m["name"] for m in existing_members 
+                if m.get("gender") in ["หญิง", "เมีย"] and m.get("gen_level", 1) == parent_target_gen
+            ]
+        else:
+            father_options = ["- ไม่ระบุ -"]
+            mother_options = ["- ไม่ระบุ -"]
+        
+        st.write("")
+        
+        with st.form("add_member_form", clear_on_submit=False):
+            name = st.text_input("ชื่อสมาชิก*")
+            
+            if member_type == "คน":
+                species = "คน"
+                gender = st.selectbox("เพศ", ["ชาย", "หญิง", "อื่นๆ"])
+            else:
+                species = st.selectbox("ชนิดสัตว์เลี้ยง", ["แมว", "หมา", "นก", "กระต่าย", "อื่นๆ"])
+                gender = st.selectbox("เพศ", ["ผู้", "เมีย"])
+                
+            birth_date = st.date_input(
+                "วัน/เดือน/ปี เกิด", 
+                value=None, 
+                min_value=datetime(1900, 1, 1), 
+                max_value=datetime.now(),
+                format="DD/MM/YYYY"
+            )
+            
+            col_f, col_m = st.columns(2)
+            with col_f:
+                father = st.selectbox(f"เลือกพ่อ (จาก Gen {parent_target_gen})" if gen_level > 1 else "เลือกพ่อ", father_options)
+            with col_m:
+                mother = st.selectbox(f"เลือกแม่ (จาก Gen {parent_target_gen})" if gen_level > 1 else "เลือกแม่", mother_options)
+                
+            notes = st.text_area("บันทึกเพิ่มเติม", placeholder="ใส่บันทึกย่อ นิสัย หรือลักษณะเด่น...")
+            uploaded_file = st.file_uploader("📸 รูปถ่ายสมาชิก", type=["jpg", "png", "jpeg"])
+            
+            submitted = st.form_submit_button("✨ ตรวจสอบข้อมูลก่อนบันทึก", use_container_width=True)
+            
+            if submitted:
+                if not name:
+                    st.error("กรุณากรอกชื่อสมาชิก")
+                else:
+                    file_bytes = uploaded_file.getvalue() if uploaded_file is not None else None
+                    file_name_val = uploaded_file.name if uploaded_file is not None else None
+                    file_type_val = uploaded_file.type if uploaded_file is not None else None
+
+                    st.session_state.pending_member_data = {
                         "name": name,
                         "type": member_type,
                         "species": species,
@@ -584,11 +664,9 @@ with tab2:
                         "father": father if father != "- ไม่ระบุ -" else None,
                         "mother": mother if mother != "- ไม่ระบุ -" else None,
                         "notes": notes,
-                        "image_url": image_url
+                        "file_bytes": file_bytes,
+                        "file_name": file_name_val,
+                        "file_type": file_type_val
                     }
-                    
-                    supabase.table("members").insert(new_member).execute()
-                    st.success(f"บันทึก {name} เรียบร้อยแล้ว")
+                    st.session_state.show_save_confirm = True
                     st.rerun()
-                except Exception as e:
-                    st.error(f"เกิดข้อผิดพลาด: {e}")
