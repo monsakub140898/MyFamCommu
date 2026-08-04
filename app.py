@@ -474,7 +474,7 @@ with tab2:
     
     with col_type:
         st.markdown("<div class='input-label'>ประเภทสมาชิก</div>", unsafe_allow_html=True)
-        member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
+        member_type = st.radio(["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
         
     with col_gen:
         st.markdown("<div class='input-label'>Generation</div>", unsafe_allow_html=True)
