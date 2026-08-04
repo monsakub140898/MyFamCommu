@@ -25,18 +25,6 @@ def init_supabase() -> Client:
 
 supabase = init_supabase()
 
-# Initialize Session State for Generation
-if "gen_level" not in st.session_state:
-    st.session_state.gen_level = 0
-
-def dec_gen():
-    if st.session_state.gen_level > 0:
-        st.session_state.gen_level -= 1
-
-def inc_gen():
-    if st.session_state.gen_level < 10:
-        st.session_state.gen_level += 1
-
 # ---------------------------------------------------------
 # 3. Custom Pastel World & Fancy UI CSS
 # ---------------------------------------------------------
@@ -188,46 +176,7 @@ st.markdown("""
     }
 
     /* =========================================================
-       3. Generation Stepper & General Buttons (ปรับขนาดให้เล็กลง)
-       ========================================================= */
-    div[data-testid="stNumberInput"] button {
-        display: none !important;
-    }
-
-    div[data-testid="stNumberInput"] input {
-        text-align: center !important;
-        font-weight: 700 !important;
-        font-size: 0.9rem !important;
-        color: #4A443F !important;
-        background-color: #F8F6F0 !important;
-        border-radius: 10px !important;
-        border: 1px solid #EADBCE !important;
-        padding: 0.25rem 0.5rem !important;
-        min-height: 38px !important;
-    }
-
-    /* ปุ่มปรับจำนวน + / - */
-    div[data-testid="stColumn"] button[kind="secondary"] {
-        background-color: #FFF0F3 !important;
-        color: #FF5E7E !important;
-        border: 1px solid #FFE2E7 !important;
-        border-radius: 10px !important;
-        font-weight: 600 !important;
-        font-size: 0.9rem !important;
-        padding: 0.25rem 0.5rem !important;
-        min-height: 38px !important;
-        box-shadow: 0 2px 4px rgba(255, 154, 162, 0.1) !important;
-        transition: all 0.2s ease !important;
-    }
-
-    div[data-testid="stColumn"] button[kind="secondary"]:hover {
-        background-color: #FFDDE2 !important;
-        transform: translateY(-1px) !important;
-        box-shadow: 0 3px 8px rgba(255, 154, 162, 0.2) !important;
-    }
-
-    /* =========================================================
-       4. Main Submit Form Button (ปรับขนาดลงให้กะทัดรัดเหมือนเดิม)
+       3. Main Submit Form Button
        ========================================================= */
     div[data-testid="stFormSubmitButton"] > button {
         background: linear-gradient(135deg, #FFB7B2 0%, #FF9AA2 100%) !important;
@@ -250,7 +199,7 @@ st.markdown("""
     }
 
     /* =========================================================
-       5. CSS Pastel Tree Container
+       4. CSS Pastel Tree Container
        ========================================================= */
     .tree-container {
         display: flex;
@@ -394,7 +343,7 @@ def render_member_dialog(m):
                             st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้: {img_err}")
                     
                     supabase.table("members").delete().eq("id", m["id"]).execute()
-                    st.success(f"ลบ {m['name']} เรียบร้อยแล้วครับ")
+                    st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
                     st.query_params.clear()
                     st.rerun()
                 except Exception as e:
@@ -455,7 +404,7 @@ with tab1:
                 if m.get('image_url'):
                     avatar_html = f'<img src="{m["image_url"]}" class="tree-avatar-img" style="{img_border_style}">'
                 else:
-                    icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
+                    icon = '🐱' if m.get('type'] == 'สัตว์เลี้ยง' else '👤'
                     avatar_html = f'<div class="tree-avatar-placeholder" style="background-color: {theme["badge_bg"]}; {img_border_style}">{icon}</div>'
                 
                 node_html = f'<a href="?selected_id={m["id"]}" target="_self" class="tree-node-link"><div class="tree-node" style="{card_style}">{avatar_html}<div class="tree-node-name">{m["name"]}</div><div style="{badge_style}">Gen {m.get("gen_level", 0)}</div></div></a>'
@@ -476,26 +425,18 @@ with tab2:
     col_type, col_gen = st.columns([1.0, 1.0])
     
     with col_type:
-        st.markdown("<div class='input-label'>ประเภทสมาชิก</div>", unsafe_allow_html=True)
+        # ตัดหัวข้อ "ประเภทสมาชิก" ออก เหลือแค่ตัวเลือก radio กะทัดรัด
         member_type = st.radio("ประเภทสมาชิก", ["คน", "สัตว์เลี้ยง"], horizontal=True, label_visibility="collapsed")
         
     with col_gen:
-        st.markdown("<div class='input-label'>Generation</div>", unsafe_allow_html=True)
-        
-        # เลย์เอาต์แยก 3 ช่อง: [ - ] [ 0 ] [ + ]
-        g_dec, g_val, g_inc = st.columns([0.8, 1.4, 0.8])
-        with g_dec:
-            st.button("➖", key="btn_dec_gen", on_click=dec_gen, use_container_width=True)
-        with g_val:
-            gen_level = st.number_input(
-                "Generation", 
-                min_value=0, 
-                max_value=10, 
-                key="gen_level", 
-                label_visibility="collapsed"
-            )
-        with g_inc:
-            st.button("➕", key="btn_inc_gen", on_click=inc_gen, use_container_width=True)
+        # กลับมาใช้ st.number_input แบบดั้งเดิม (มีปุ่ม + - ในตัวเล็กกะทัดรัด ไม่ยาวล้นจอ)
+        gen_level = st.number_input(
+            "Generation", 
+            min_value=0, 
+            max_value=10, 
+            value=0,
+            step=1
+        )
     
     existing_members = fetch_members()
     parent_target_gen = gen_level - 1
