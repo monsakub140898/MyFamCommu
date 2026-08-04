@@ -209,8 +209,8 @@ st.markdown("""
         border-color: #B2C8C3 !important;
     }
 
-    /* ปุ่มแก้ไขข้อมูล -> สี #7EF1FC ตามที่ต้องการ */
-    div.pastel-blue-btn button {
+    /* ปุ่มแก้ไขข้อมูลใน Dialog (คอลัมน์แรก) -> สี #7EF1FC ตามที่ต้องการ */
+    div[data-testid="stDialog"] div[data-testid="column"]:first-child div.stButton > button {
         background: linear-gradient(135deg, #7EF1FC 0%, #5CE1FE 100%) !important;
         color: #004D61 !important;
         border: 1.5px solid #38BDF8 !important;
@@ -224,7 +224,7 @@ st.markdown("""
         transition: all 0.25s ease !important;
     }
 
-    div.pastel-blue-btn button:hover {
+    div[data-testid="stDialog"] div[data-testid="column"]:first-child div.stButton > button:hover {
         background: linear-gradient(135deg, #5CE1FE 0%, #38BDF8 100%) !important;
         color: #003340 !important;
         border-color: #0284C7 !important;
@@ -478,7 +478,7 @@ def render_member_dialog(m):
                         st.query_params.clear()
                         st.rerun()
                     except Exception as e:
-                        st.error(f"เกิดข้อผิดพลาดในการแก้ไขข้อมูล: {e}")
+                        st.error(f"เกิดข้อผิดพลาดในการแก้ไขข้อมูล : {e}")
             with col_edit_no:
                 if st.button("✕ ยกเลิก", key=f"confirm_edit_no_{m['id']}", use_container_width=True):
                     st.session_state[edit_confirm_key] = False
@@ -636,11 +636,9 @@ def render_member_dialog(m):
             
             col_edit, col_del = st.columns(2)
             with col_edit:
-                st.markdown('<div class="pastel-blue-btn">', unsafe_allow_html=True)
                 if st.button("✏️ แก้ไขข้อมูล", key=f"btn_edit_{m['id']}", use_container_width=True):
                     st.session_state[edit_key] = True
                     st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
             with col_del:
                 if st.button("🗑️ ลบข้อมูล", key=f"btn_del_{m['id']}", use_container_width=True, type="primary"):
                     st.session_state[del_key] = True
