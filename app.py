@@ -77,9 +77,7 @@ st.markdown("""
         text-align: center;
     }
 
-    /* ----------------------------------------------------- */
-    /* 🎨 1. Fancy Pastel Tabs Navigation                     */
-    /* ----------------------------------------------------- */
+    /* 1. Fancy Pastel Tabs Navigation */
     .stTabs [data-baseweb="tab-list"] {
         gap: 10px;
         background-color: #EFE9E0;
@@ -116,9 +114,7 @@ st.markdown("""
         display: none;
     }
 
-    /* ----------------------------------------------------- */
-    /* 🎨 2. Main Submit Form Button (Pastel Pink 3D Glow)   */
-    /* ----------------------------------------------------- */
+    /* 2. Main Submit Form Button */
     div[data-testid="stFormSubmitButton"] > button {
         background: linear-gradient(135deg, #FFB7B2 0%, #FF9AA2 100%) !important;
         color: #FFFFFF !important;
@@ -143,9 +139,7 @@ st.markdown("""
         box-shadow: 0 3px 10px rgba(255, 139, 148, 0.3) !important;
     }
 
-    /* ----------------------------------------------------- */
-    /* 🎨 3. Modal / Dialog Buttons (Delete & Close)          */
-    /* ----------------------------------------------------- */
+    /* 3. Modal / Dialog Buttons */
     div[data-testid="stButton"] > button {
         border-radius: 14px !important;
         font-weight: 600 !important;
@@ -153,7 +147,6 @@ st.markdown("""
         padding: 0.55rem 1rem !important;
     }
 
-    /* Close / Secondary Button */
     div[data-testid="stButton"] > button[kind="secondary"] {
         background: #F4EFE6 !important;
         color: #5C5248 !important;
@@ -166,7 +159,6 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
     }
 
-    /* Delete / Primary Button */
     div[data-testid="stButton"] > button[kind="primary"] {
         background: linear-gradient(135deg, #FF8080 0%, #FF5252 100%) !important;
         color: #FFFFFF !important;
@@ -180,9 +172,7 @@ st.markdown("""
         box-shadow: 0 8px 22px rgba(255, 82, 82, 0.48) !important;
     }
 
-    /* ----------------------------------------------------- */
-    /* 🎨 4. Radio Buttons Styled as Pill Toggle Switch      */
-    /* ----------------------------------------------------- */
+    /* 4. Radio Pill Toggle Switch */
     div[data-testid="stRadio"] div[role="radiogroup"] {
         gap: 8px;
         background-color: #EFE9E0;
@@ -210,9 +200,7 @@ st.markdown("""
         color: #5C5248 !important;
     }
 
-    /* ----------------------------------------------------- */
-    /* 🎨 5. File Uploader Browse Button                      */
-    /* ----------------------------------------------------- */
+    /* 5. File Uploader Browse Button */
     section[data-testid="stFileUploadDropzone"] button {
         background: linear-gradient(135deg, #BAE6FD 0%, #7DD3FC 100%) !important;
         color: #0369A1 !important;
@@ -229,9 +217,7 @@ st.markdown("""
         box-shadow: 0 6px 16px rgba(125, 211, 252, 0.6) !important;
     }
 
-    /* ----------------------------------------------------- */
-    /* 🎨 6. Number Input Increment/Decrement (+ / -)        */
-    /* ----------------------------------------------------- */
+    /* 6. Number Input Buttons */
     div[data-testid="stNumberInput"] button {
         background-color: #F4EFE6 !important;
         border-radius: 10px !important;
@@ -332,11 +318,11 @@ st.markdown("""
 # Pastel Color Palette System
 # ---------------------------------------------------------
 PASTEL_PALETTE = [
-    {"bg": "#FFF0F2", "color": "#E11D48", "border": "#FFCCE1", "badge_bg": "#FFE4E6"}, # Gen 0: Pink
-    {"bg": "#FEFCE8", "color": "#D97706", "border": "#FEF08A", "badge_bg": "#FEF3C7"}, # Gen 1: Yellow
-    {"bg": "#F0FDF4", "color": "#16A34A", "border": "#BBF7D0", "badge_bg": "#DCFCE7"}, # Gen 2: Green
-    {"bg": "#F0F9FF", "color": "#0284C7", "border": "#BAE6FD", "badge_bg": "#E0F2FE"}, # Gen 3: Blue
-    {"bg": "#FAF5FF", "color": "#9333EA", "border": "#E9D5FF", "badge_bg": "#F3E8FF"}, # Gen 4: Lavender
+    {"bg": "#FFF0F2", "color": "#E11D48", "border": "#FFCCE1", "badge_bg": "#FFE4E6"}, # Gen 0
+    {"bg": "#FEFCE8", "color": "#D97706", "border": "#FEF08A", "badge_bg": "#FEF3C7"}, # Gen 1
+    {"bg": "#F0FDF4", "color": "#16A34A", "border": "#BBF7D0", "badge_bg": "#DCFCE7"}, # Gen 2
+    {"bg": "#F0F9FF", "color": "#0284C7", "border": "#BAE6FD", "badge_bg": "#E0F2FE"}, # Gen 3
+    {"bg": "#FAF5FF", "color": "#9333EA", "border": "#E9D5FF", "badge_bg": "#F3E8FF"}, # Gen 4
 ]
 
 # ---------------------------------------------------------
@@ -411,13 +397,14 @@ with tab1:
     data = fetch_members()
     
     if not data:
-        st.markdown("""
-        <div style="text-align: center; padding: 40px 20px; background-color: #FFFFFF; border: 2px solid #F3ECE1; border-radius: 24px; margin-top: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.02);">
-            <p style="font-size: 2.5rem; margin-bottom: 8px;">🐱🌸🐶</p>
-            <p style="color: #5C5248; font-weight: 600; font-size: 1.05rem; margin-bottom: 4px;">ยังไม่มีข้อมูลสมาชิกในบ้าน</p>
-            <p style="color: #A09385; font-size: 0.85rem; margin: 0;">กดที่แท็บ <b>"➕ เพิ่มสมาชิก"</b> ด้านบนเพื่อเริ่มเพิ่มสมาชิกคนแรกได้เลยครับ</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div style="text-align: center; padding: 40px 20px; background-color: #FFFFFF; border: 2px solid #F3ECE1; border-radius: 24px; margin-top: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.02);">'
+            '<p style="font-size: 2.5rem; margin-bottom: 8px;">🐱🌸🐶</p>'
+            '<p style="color: #5C5248; font-weight: 600; font-size: 1.05rem; margin-bottom: 4px;">ยังไม่มีข้อมูลสมาชิกในบ้าน</p>'
+            '<p style="color: #A09385; font-size: 0.85rem; margin: 0;">กดที่แท็บ <b>"➕ เพิ่มสมาชิก"</b> ด้านบนเพื่อเริ่มเพิ่มสมาชิกคนแรกได้เลยครับ</p>'
+            '</div>', 
+            unsafe_allow_html=True
+        )
     else:
         st.markdown("<div class='section-title'>🏡 แผนผัง (คลิกที่รูปเพื่อดูรายละเอียด)</div>", unsafe_allow_html=True)
         
@@ -444,20 +431,13 @@ with tab1:
                 img_border_style = f"border: 3px solid {theme['border']};"
                 
                 if m.get('image_url'):
-                    avatar_html = f"<img src='{m['image_url']}' class='tree-avatar-img' style='{img_border_style}'>"
+                    avatar_html = f'<img src="{m["image_url"]}" class="tree-avatar-img" style="{img_border_style}">'
                 else:
                     icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
-                    avatar_html = f"<div class='tree-avatar-placeholder' style='background-color: {theme['badge_bg']}; {img_border_style}'>{icon}</div>"
+                    avatar_html = f'<div class="tree-avatar-placeholder" style="background-color: {theme["badge_bg"]}; {img_border_style}">{icon}</div>'
                 
-                node_html = f"""
-                <a href='?selected_id={m['id']}' target='_self' class='tree-node-link'>
-                    <div class='tree-node' style='{card_style}'>
-                        {avatar_html}
-                        <div class='tree-node-name'>{m['name']}</div>
-                        <div style='{badge_style}'>Gen {m.get('gen_level', 0)}</div>
-                    </div>
-                </a>
-                """
+                # เขียน HTML แบบบรรทัดเดียวไม่ย่อหน้า ป้องกัน Markdown Code Block Error
+                node_html = f'<a href="?selected_id={m["id"]}" target="_self" class="tree-node-link"><div class="tree-node" style="{card_style}">{avatar_html}<div class="tree-node-name">{m["name"]}</div><div style="{badge_style}">Gen {m.get("gen_level", 0)}</div></div></a>'
                 tree_blocks.append(node_html)
             
             tree_blocks.append("</div>")
