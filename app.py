@@ -329,7 +329,7 @@ def fetch_members():
         return []
 
 # ---------------------------------------------------------
-# 5. Dialog Function for Member Details Modal
+# 5. Dialog Function for Member Details Modal (ปรับปรุงการลบรูป)
 # ---------------------------------------------------------
 def render_member_dialog(m):
     @st.dialog("📄 รายละเอียดสมาชิก")
@@ -354,19 +354,27 @@ def render_member_dialog(m):
         with col_del:
             if st.button("🗑️ ลบข้อมูล", key=f"modal_del_{m['id']}", use_container_width=True, type="primary"):
                 try:
+                    # 1. ลบรูปภาพใน Supabase Storage ก่อน
                     if m.get('image_url'):
                         try:
-                            file_name = m['image_url'].split('/')[-1]
-                            supabase.storage.from_("fam-photos").remove([file_name])
+                            # ดึงชื่อไฟล์ และตัด query parameters ออก (ถ้ามี)
+                            raw_filename = m['image_url'].split('/')[-1]
+                            file_name = raw_filename.split('?')[0]
+                            
+                            # สั่งลบไฟล์ออกจาก bucket
+                            res = supabase.storage.from_("fam-photos").remove([file_name])
                         except Exception as img_err:
-                            st.warning(f"ลบรูปภาพไม่สำเร็จ: {img_err}")
+                            st.error(f"ไม่สามารถลบรูปภาพจาก Storage ได้: {img_err}")
                     
+                    # 2. ลบข้อมูลจาก Database ตาราง members
                     supabase.table("members").delete().eq("id", m["id"]).execute()
-                    st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
+                    
+                    st.success(f"ลบ {m['name']} เรียบร้อยแล้วครับ")
                     st.query_params.clear()
                     st.rerun()
                 except Exception as e:
-                    st.error(f"เกิดข้อผิดพลาดในการลบ: {e}")
+                    st.error(f"เกิดข้อผิดพลาดในการลบข้อมูล: {e}")
+                    
         with col_close:
             if st.button("ปิด", key="modal_close", use_container_width=True):
                 st.query_params.clear()
