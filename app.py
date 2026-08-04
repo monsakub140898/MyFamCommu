@@ -345,11 +345,11 @@ st.markdown("""
 # Pastel Color Palette System
 # ---------------------------------------------------------
 PASTEL_PALETTE = [
-    {"bg": "#FFF0F2", "color": "#E11D48", "border": "#FFCCE1", "badge_bg": "#FFE4E6"}, # Gen 0
-    {"bg": "#FEFCE8", "color": "#D97706", "border": "#FEF08A", "badge_bg": "#FEF3C7"}, # Gen 1
-    {"bg": "#F0FDF4", "color": "#16A34A", "border": "#BBF7D0", "badge_bg": "#DCFCE7"}, # Gen 2
-    {"bg": "#F0F9FF", "color": "#0284C7", "border": "#BAE6FD", "badge_bg": "#E0F2FE"}, # Gen 3
-    {"bg": "#FAF5FF", "color": "#9333EA", "border": "#E9D5FF", "badge_bg": "#F3E8FF"}, # Gen 4
+    {"bg": "#FFF0F2", "color": "#E11D48", "border": "#FFCCE1", "badge_bg": "#FFE4E6"}, # Gen 1
+    {"bg": "#FEFCE8", "color": "#D97706", "border": "#FEF08A", "badge_bg": "#FEF3C7"}, # Gen 2
+    {"bg": "#F0FDF4", "color": "#16A34A", "border": "#BBF7D0", "badge_bg": "#DCFCE7"}, # Gen 3
+    {"bg": "#F0F9FF", "color": "#0284C7", "border": "#BAE6FD", "badge_bg": "#E0F2FE"}, # Gen 4
+    {"bg": "#FAF5FF", "color": "#9333EA", "border": "#E9D5FF", "badge_bg": "#F3E8FF"}, # Gen 5
 ]
 
 # ---------------------------------------------------------
@@ -380,8 +380,6 @@ def render_member_dialog(m):
                 unsafe_allow_html=True
             )
         
-        st.markdown(f"<h3 style='margin-bottom: 4px; font-weight: 700; color: #4A443F;'>{m['name']}</h3>", unsafe_allow_html=True)
-        
         if m.get('type') == 'คน':
             type_display = 'คน'
         else:
@@ -391,12 +389,13 @@ def render_member_dialog(m):
         parents_html = f"<div><b>พ่อ / แม่:</b> {m.get('father', '-')} / {m.get('mother', '-')}</div>" if (m.get('father') or m.get('mother')) else ""
         notes_html = f"<div><b>บันทึกย่อ:</b> {m['notes']}</div>" if m.get('notes') else ""
 
-        # ปรับกล่องข้อมูลให้เป็นพื้นหลังสีขาวสะอาดตา ตัดขอบเรียบหรู ดู Minimal
+        # รวมชื่อเข้ามาไว้ในกล่องข้อมูลด้านล่าง พร้อมตกแต่งเส้นคั้นและหัวข้อให้เรียบร้อย
         st.markdown(
             f"""
-            <div style='background: #FFFFFF; border: 1.5px solid #EADBCE; padding: 14px 16px; border-radius: 16px; font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);'>
+            <div style='background: #FFFFFF; border: 1.5px solid #EADBCE; padding: 16px; border-radius: 16px; font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);'>
+                <div style='font-size: 1.2rem; font-weight: 700; color: #4A443F; margin-bottom: 4px; border-bottom: 1px solid #F3ECE1; padding-bottom: 8px;'>{m['name']}</div>
                 <div><b>ประเภท:</b> {type_display}</div>
-                <div><b>เพศ:</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {m.get('gen_level', 0)}</div>
+                <div><b>เพศ:</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {m.get('gen_level', 1)}</div>
                 {birth_date_html}
                 {parents_html}
                 {notes_html}
@@ -460,12 +459,12 @@ with tab1:
             if selected_m:
                 render_member_dialog(selected_m)
         
-        unique_gens = sorted(list(set(m.get('gen_level', 0) for m in data)))
+        unique_gens = sorted(list(set(m.get('gen_level', 1) for m in data)))
         
         tree_blocks = ["<div class='tree-container'>"]
         for idx, gen in enumerate(unique_gens):
-            gen_members = [m for m in data if m.get('gen_level', 0) == gen]
-            theme = PASTEL_PALETTE[gen % len(PASTEL_PALETTE)]
+            gen_members = [m for m in data if m.get('gen_level', 1) == gen]
+            theme = PASTEL_PALETTE[(gen - 1) % len(PASTEL_PALETTE)]
             
             if idx > 0:
                 tree_blocks.append("<div class='tree-connector'></div>")
@@ -482,7 +481,7 @@ with tab1:
                     icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
                     avatar_html = f'<div class="tree-avatar-placeholder" style="background-color: {theme["badge_bg"]}; {img_border_style}">{icon}</div>'
                 
-                node_html = f'<a href="?selected_id={m["id"]}" target="_self" class="tree-node-link"><div class="tree-node" style="{card_style}">{avatar_html}<div class="tree-node-name">{m["name"]}</div><div style="{badge_style}">Gen {m.get("gen_level", 0)}</div></div></a>'
+                node_html = f'<a href="?selected_id={m["id"]}" target="_self" class="tree-node-link"><div class="tree-node" style="{card_style}">{avatar_html}<div class="tree-node-name">{m["name"]}</div><div style="{badge_style}">Gen {m.get("gen_level", 1)}</div></div></a>'
                 tree_blocks.append(node_html)
             
             tree_blocks.append("</div>")
@@ -505,23 +504,23 @@ with tab2:
     with col_gen:
         gen_level = st.number_input(
             "Generation", 
-            min_value=0, 
+            min_value=1, 
             max_value=10, 
-            value=0,
+            value=1,
             step=1
         )
     
     existing_members = fetch_members()
     parent_target_gen = gen_level - 1
     
-    if gen_level > 0:
+    if gen_level > 1:
         father_options = ["- ไม่ระบุ -"] + [
             m["name"] for m in existing_members 
-            if m.get("gender") in ["ชาย", "ผู้"] and m.get("gen_level", 0) == parent_target_gen
+            if m.get("gender") in ["ชาย", "ผู้"] and m.get("gen_level", 1) == parent_target_gen
         ]
         mother_options = ["- ไม่ระบุ -"] + [
             m["name"] for m in existing_members 
-            if m.get("gender") in ["หญิง", "เมีย"] and m.get("gen_level", 0) == parent_target_gen
+            if m.get("gender") in ["หญิง", "เมีย"] and m.get("gen_level", 1) == parent_target_gen
         ]
     else:
         father_options = ["- ไม่ระบุ -"]
@@ -549,9 +548,9 @@ with tab2:
         
         col_f, col_m = st.columns(2)
         with col_f:
-            father = st.selectbox(f"เลือกพ่อ (จาก Gen {parent_target_gen})" if gen_level > 0 else "เลือกพ่อ", father_options)
+            father = st.selectbox(f"เลือกพ่อ (จาก Gen {parent_target_gen})" if gen_level > 1 else "เลือกพ่อ", father_options)
         with col_m:
-            mother = st.selectbox(f"เลือกแม่ (จาก Gen {parent_target_gen})" if gen_level > 0 else "เลือกแม่", mother_options)
+            mother = st.selectbox(f"เลือกแม่ (จาก Gen {parent_target_gen})" if gen_level > 1 else "เลือกแม่", mother_options)
             
         notes = st.text_area("บันทึกเพิ่มเติม", placeholder="ใส่บันทึกย่อ นิสัย หรือลักษณะเด่น...")
         uploaded_file = st.file_uploader("📸 รูปถ่ายสมาชิก", type=["jpg", "png", "jpeg"])
