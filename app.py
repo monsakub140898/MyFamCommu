@@ -189,7 +189,6 @@ st.markdown("""
         width: 100% !important;
     }
 
-    /* ปุ่มทั่วไป / ปุ่มปิด (Secondary Button) ให้ดูเรียบง่าย สบายตา */
     div.stButton > button:not([kind="primary"]) {
         background: #F5EFE6 !important;
         color: #7A6F64 !important;
@@ -207,7 +206,6 @@ st.markdown("""
         border-color: #D6C5B4 !important;
     }
 
-    /* ปุ่มลบ (Primary Button) ปรับให้เป็นโทนพาสเทลชมพู-ส้มละมุน ไม่แดงจัดจนโดดเกินไป */
     div.stButton > button[kind="primary"] {
         background: linear-gradient(135deg, #FFB5A7 0%, #FF8FAB 100%) !important;
         color: #6E3A3A !important;
@@ -226,7 +224,6 @@ st.markdown("""
         box-shadow: 0 6px 16px rgba(255, 143, 171, 0.4) !important;
     }
 
-    /* ปุ่ม Submit ในฟอร์ม */
     div[data-testid="stFormSubmitButton"] {
         display: flex !important;
         justify-content: center !important;
@@ -338,7 +335,6 @@ st.markdown("""
         border-radius: 3px;
     }
 
-    /* Modal Minimalist Customization */
     div[data-testid="stDialog"] div[data-testid="stVerticalBlock"] {
         gap: 0.8rem;
     }
@@ -391,14 +387,21 @@ def render_member_dialog(m):
         else:
             type_display = f"{m.get('type')} ({m.get('species', '-')})"
             
+        # แยกตัวแปร HTML เพื่อป้องกัน SyntaxError จากการซ้อน f-string
+        birth_date_html = f"<div><b>วันเกิด:</b> {m['birth_date']}</div>" if m.get('birth_date') else ""
+        parents_html = f"<div><b>พ่อ / แม่:</b> {m.get('father', '-')} / {m.get('mother', '-')}</div>" if (m.get('father') or m.get('mother')) else ""
+        notes_html = f"<div><b>บันทึกย่อ:</b> {m['notes']}</div>" if m.get('notes') else ""
+
         st.markdown(
-            f"<div style='background: #F5EFE6; padding: 12px 16px; border-radius: 16px; font-size: 0.9rem; color: #5C5248; display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;'>"
-            f"<div><b>ประเภท:</b> {type_display}</div>"
-            f"<div><b>เพศ:</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {m.get('gen_level', 0)}</div>"
-            f"{f'<div><b>วันเกิด:</b> {m[\"birth_date\"]}</div>' if m.get('birth_date') else ''}"
-            f"{f'<div><b>พ่อ / แม่:</b> {m.get(\"father\", \"-\")} / {m.get(\"mother\", \"-\")}</div>' if m.get('father') or m.get('mother') else ''}"
-            f"{f'<div><b>บันทึกย่อ:</b> {m[\"notes\"]}</div>' if m.get('notes') else ''}"
-            f"</div>",
+            f"""
+            <div style='background: #F5EFE6; padding: 12px 16px; border-radius: 16px; font-size: 0.9rem; color: #5C5248; display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;'>
+                <div><b>ประเภท:</b> {type_display}</div>
+                <div><b>เพศ:</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {m.get('gen_level', 0)}</div>
+                {birth_date_html}
+                {parents_html}
+                {notes_html}
+            </div>
+            """,
             unsafe_allow_html=True
         )
         
