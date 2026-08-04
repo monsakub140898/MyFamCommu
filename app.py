@@ -2,6 +2,7 @@ import streamlit as st
 from supabase import create_client, Client
 import uuid
 from datetime import datetime
+import html
 
 # ---------------------------------------------------------
 # 1. Page Configuration (Mobile-First)
@@ -45,7 +46,7 @@ st.markdown("""
     .block-container {
         padding-top: 1.8rem;
         padding-bottom: 4rem;
-        max-width: 480px;
+        max-width: 500px;
         margin: 0 auto;
     }
 
@@ -66,22 +67,13 @@ st.markdown("""
         font-weight: 400;
     }
 
-    .gen-header {
-        font-size: 0.72rem;
+    .section-title {
+        font-size: 0.75rem;
         font-weight: 600;
         letter-spacing: 0.08em;
         text-transform: uppercase;
         color: #8C8A85;
-        margin: 1.5rem 0 0.6rem 0;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .gen-header::after {
-        content: "";
-        flex-grow: 1;
-        height: 1px;
-        background-color: #EFEFEA;
+        margin: 1.5rem 0 0.8rem 0;
     }
 
     .member-card {
@@ -97,8 +89,8 @@ st.markdown("""
     }
 
     .avatar-img {
-        width: 48px;
-        height: 48px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
         object-fit: cover;
         border: 1px solid #EFEFEA;
@@ -106,20 +98,20 @@ st.markdown("""
     }
     
     .avatar-placeholder {
-        width: 48px;
-        height: 48px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
         background-color: #F4F4F0;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         flex-shrink: 0;
         border: 1px solid #EFEFEA;
     }
 
     .member-name {
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         font-weight: 600;
         color: #1A1A18;
         margin: 0;
@@ -180,7 +172,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 4. App Header
+# 4. App Header & Data Fetching
 # ---------------------------------------------------------
 st.markdown("<div class='app-title'>My Fam Commu</div>", unsafe_allow_html=True)
 st.markdown("<div class='app-subtitle'>Family Tree & Pet Records</div>", unsafe_allow_html=True)
@@ -193,10 +185,83 @@ def fetch_members():
         st.error(f"ไม่สามารถเชื่อมต่อฐานข้อมูลได้: {e}")
         return []
 
+# ---------------------------------------------------------
+# 5. ฟังก์ชันสร้าง Graphviz DOT Syntax สำหรับวาด Tree
+# ---------------------------------------------------------
+def generate_family_tree_dot(members):
+    if not members:
+        return None
+        
+    dot = [
+        'digraph FamilyTree {',
+        '    graph [rankdir=TB, bgcolor="transparent", nodesep=0.3, ranksep=0.4];',
+        '    node [fontname="Sarabun", shape=plaintext];',
+        '    edge [color="#B4B2AC", penwidth=1.5, dir=none];',
+    ]
+    
+    name_to_member = {m['name']: m for m in members}
+    
+    # 1. วาดกล่อง Node ของแต่ละคน
+    for m in members:
+        m_id = f"node_{m['id']}".replace("-", "_")
+        safe_name = html.escape(m['name'])
+        safe_species = html.escape(m.get('species', ''))
+        safe_gender = html.escape(m.get('gender', ''))
+        
+        label = f'''<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#FFFFFF" COLOR="#D97757" STYLE="ROUNDED">
+            <TR><TD ALIGN="CENTER"><FONT POINT-SIZE="11"><B>{safe_name}</B></FONT></TD></TR>
+            <TR><TD ALIGN="CENTER"><FONT POINT-SIZE="8" COLOR="#706F6C">{safe_species} ({safe_gender})</FONT></TD></TR>
+        </TABLE>
+        >'''
+        dot.append(f'    {m_id} [label={label}];')
+
+    # 2. เชื่อมโยงสายเลือด (พ่อ + แม่ -> ลูก)
+    unions = {}
+    union_counter = 0
+
+    for m in members:
+        m_id = f"node_{m['id']}".replace("-", "_")
+        father_name = m.get('father')
+        mother_name = m.get('mother')
+        
+        father = name_to_member.get(father_name) if father_name else None
+        mother = name_to_member.get(mother_name) if mother_name else None
+        
+        if father and mother:
+            couple_key = tuple(sorted([father['name'], mother['name']]))
+            if couple_key not in unions:
+                union_counter += 1
+                u_id = f"union_{union_counter}"
+                f_id = f"node_{father['id']}".replace("-", "_")
+                mo_id = f"node_{mother['id']}".replace("-", "_")
+                
+                dot.append(f'    {u_id} [shape=point, width=0.01, height=0.01];')
+                dot.append(f'    {{ rank=same; {f_id}; {mo_id}; }}')
+                dot.append(f'    {f_id} -> {u_id};')
+                dot.append(f'    {mo_id} -> {u_id};')
+                unions[couple_key] = u_id
+            
+            u_id = unions[couple_key]
+            dot.append(f'    {u_id} -> {m_id};')
+            
+        elif father:
+            f_id = f"node_{father['id']}".replace("-", "_")
+            dot.append(f'    {f_id} -> {m_id};')
+        elif mother:
+            mo_id = f"node_{mother['id']}".replace("-", "_")
+            dot.append(f'    {mo_id} -> {m_id};')
+            
+    dot.append('}')
+    return '\n'.join(dot)
+
+# ---------------------------------------------------------
+# Tabs Navigation
+# ---------------------------------------------------------
 tab1, tab2 = st.tabs(["🌳 ผังครอบครัว", "➕ เพิ่มสมาชิก"])
 
 # ---------------------------------------------------------
-# Tab 1: ผังครอบครัว
+# Tab 1: ผังครอบครัว (Visual Family Tree)
 # ---------------------------------------------------------
 with tab1:
     data = fetch_members()
@@ -210,55 +275,62 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
     else:
-        for gen in range(6):
-            members_in_gen = [m for m in data if m.get("gen_level") == gen]
-            if members_in_gen:
-                st.markdown(f"<div class='gen-header'>Generation {gen}</div>", unsafe_allow_html=True)
-                
-                for m in members_in_gen:
-                    if m.get('image_url'):
-                        img_html = f"<img src='{m['image_url']}' class='avatar-img'>"
-                    else:
-                        icon = '🐱' if m['type'] == 'สัตว์เลี้ยง' else '👤'
-                        img_html = f"<div class='avatar-placeholder'>{icon}</div>"
-                    
-                    card_html = f"""
-                    <div class="member-card">
-                        {img_html}
-                        <div style="flex-grow: 1;">
-                            <div class="member-name">
-                                {m['name']}
-                                <span class="badge-tag">{m['species']}</span>
-                            </div>
-                            <div class="member-sub">เพศ: {m['gender']}</div>
-                        </div>
+        # ส่วนที่ 1: แสดงแผนผังต้นไม้ (Family Tree Diagram)
+        st.markdown("<div class='section-title'>แผนผังสายเลือด (FAMILY TREE)</div>", unsafe_allow_html=True)
+        
+        dot_code = generate_family_tree_dot(data)
+        if dot_code:
+            st.graphviz_chart(dot_code, use_container_width=True)
+        
+        st.divider()
+
+        # ส่วนที่ 2: รายชื่อสมาชิกทั้งหมด (คลิกเพื่อดูรายละเอียด / ลบสมาชิก)
+        st.markdown("<div class='section-title'>รายชื่อสมาชิกทั้งหมด</div>", unsafe_allow_html=True)
+        
+        for m in data:
+            if m.get('image_url'):
+                img_html = f"<img src='{m['image_url']}' class='avatar-img'>"
+            else:
+                icon = '🐱' if m['type'] == 'สัตว์เลี้ยง' else '👤'
+                img_html = f"<div class='avatar-placeholder'>{icon}</div>"
+            
+            card_html = f"""
+            <div class="member-card">
+                {img_html}
+                <div style="flex-grow: 1;">
+                    <div class="member-name">
+                        {m['name']}
+                        <span class="badge-tag">Gen {m.get('gen_level', 0)}</span>
                     </div>
-                    """
-                    st.markdown(card_html, unsafe_allow_html=True)
-                    
-                    with st.expander(f"ข้อมูลของ {m['name']}"):
-                        if m.get('image_url'):
-                            st.image(m['image_url'], use_container_width=True)
-                        st.write(f"**ประเภท:** {m['type']} ({m['species']})")
-                        st.write(f"**เพศ:** {m['gender']} | **รุ่น:** Gen {m['gen_level']}")
-                        if m.get('birth_date'):
-                            st.write(f"**วันเกิด:** {m['birth_date']}")
-                        if m.get('father') or m.get('mother'):
-                            st.write(f"**พ่อ-แม่:** {m.get('father', '-')} / {m.get('mother', '-')}")
-                        if m.get('notes'):
-                            st.write(f"**บันทึก:** {m['notes']}")
-                        
-                        st.divider()
-                        if st.button(f"🗑️ ลบ {m['name']}", key=f"del_{m['id']}", use_container_width=True):
-                            try:
-                                supabase.table("members").delete().eq("id", m["id"]).execute()
-                                st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
-                                st.rerun()
-                            except Exception as e:
-                                st.error(f"เกิดข้อผิดพลาด: {e}")
+                    <div class="member-sub">{m['species']} | เพศ: {m['gender']}</div>
+                </div>
+            </div>
+            """
+            st.markdown(card_html, unsafe_allow_html=True)
+            
+            with st.expander(f"ข้อมูลของ {m['name']}"):
+                if m.get('image_url'):
+                    st.image(m['image_url'], use_container_width=True)
+                st.write(f"**ประเภท:** {m['type']} ({m['species']})")
+                st.write(f"**เพศ:** {m['gender']} | **รุ่น:** Gen {m['gen_level']}")
+                if m.get('birth_date'):
+                    st.write(f"**วันเกิด:** {m['birth_date']}")
+                if m.get('father') or m.get('mother'):
+                    st.write(f"**พ่อ-แม่:** {m.get('father', '-')} / {m.get('mother', '-')}")
+                if m.get('notes'):
+                    st.write(f"**บันทึก:** {m['notes']}")
+                
+                st.divider()
+                if st.button(f"🗑️ ลบ {m['name']}", key=f"del_{m['id']}", use_container_width=True):
+                    try:
+                        supabase.table("members").delete().eq("id", m["id"]).execute()
+                        st.success(f"ลบ {m['name']} เรียบร้อยแล้ว")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"เกิดข้อผิดพลาด: {e}")
 
 # ---------------------------------------------------------
-# Tab 2: เพิ่มสมาชิกใหม่ (มีช่องปฏิทินเลือกวันเกิด)
+# Tab 2: เพิ่มสมาชิกใหม่
 # ---------------------------------------------------------
 with tab2:
     st.markdown("<p style='font-size: 0.9rem; color: #706F6C; margin-bottom: 1rem;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกเข้าสู่ระบบ</p>", unsafe_allow_html=True)
@@ -268,7 +340,7 @@ with tab2:
     existing_members = fetch_members()
     member_names = ["- ไม่ระบุ -"] + [m["name"] for m in existing_members]
     
-    with st.form("add_member_form"):
+    with st.form("add_member_form", clear_on_submit=True):
         name = st.text_input("ชื่อสมาชิก*")
         
         if member_type == "คน":
@@ -278,9 +350,8 @@ with tab2:
             species = st.selectbox("ชนิดสัตว์เลี้ยง", ["แมว", "หมา", "นก", "กระต่าย", "อื่นๆ"])
             gender = st.selectbox("เพศ", ["ผู้", "เมีย"])
             
-        gen_level = st.number_input("Generation (0, 1, 2...)", min_value=0, max_value=10, value=0)
+        gen_level = st.number_input("Generation (0=รุ่นแรกสุด, 1=รุ่นลูก, 2=รุ่นหลาน)", min_value=0, max_value=10, value=0)
         
-        # เพิ่มช่องเลือกวันเกิด (แสดงปฏิทินให้จิ้มเลือกได้ง่าย)
         birth_date = st.date_input(
             "วัน/เดือน/ปี เกิด", 
             value=None, 
