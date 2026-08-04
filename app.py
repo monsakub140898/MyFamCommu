@@ -7,7 +7,7 @@ from datetime import datetime
 # 1. Page Configuration (Mobile-First)
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="My Fam Commu",
+    page_title="MyFamCommu",
     page_icon="🐾",
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -26,7 +26,7 @@ def init_supabase() -> Client:
 supabase = init_supabase()
 
 # ---------------------------------------------------------
-# 3. Custom Pastel World & Fancy All Buttons CSS
+# 3. Custom Pastel World & Fancy UI CSS
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -77,44 +77,132 @@ st.markdown("""
         text-align: center;
     }
 
-    /* 1. Fancy Pastel Tabs Navigation */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
-        background-color: #EFE9E0;
-        padding: 8px;
-        border-radius: 20px;
-        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
-        border: 1px solid #E5DEC9;
+    /* =========================================================
+       1. แท็บเมนู (Tabs Navigation)
+       ========================================================= */
+    div[data-testid="stTabs"] [data-baseweb="tab-list"] {
+        gap: 8px !important;
+        background-color: #F5EFE6 !important;
+        padding: 6px 8px !important;
+        border-radius: 20px !important;
+        border: 1px solid #EADBCE !important;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03) !important;
     }
 
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 14px;
-        padding: 10px 22px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #8C8275;
-        border: none;
-        background: transparent;
-        transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    div[data-testid="stTabs"] button[data-baseweb="tab"] {
+        border-radius: 14px !important;
+        padding: 8px 18px !important;
+        font-size: 0.92rem !important;
+        font-weight: 600 !important;
+        color: #7A6F64 !important;
+        border: none !important;
+        background: transparent !important;
+        transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }
 
-    .stTabs [data-baseweb="tab"]:hover {
+    div[data-testid="stTabs"] button[data-baseweb="tab"]:hover {
         color: #E11D48 !important;
-        transform: translateY(-2px) scale(1.03);
+        background: rgba(255, 255, 255, 0.7) !important;
+        transform: translateY(-2px) scale(1.02) !important;
     }
 
-    .stTabs [aria-selected="true"] {
+    div[data-testid="stTabs"] button[aria-selected="true"] {
         background: linear-gradient(135deg, #FFB7B2 0%, #FFDAC1 100%) !important;
         color: #8D2B44 !important;
-        box-shadow: 0 6px 18px rgba(255, 154, 162, 0.45) !important;
-        transform: translateY(-3px) scale(1.04);
+        box-shadow: 0 4px 14px rgba(255, 154, 162, 0.45) !important;
+        transform: translateY(-1px) !important;
     }
 
-    .stTabs [data-baseweb="tab-highlight-title"] {
-        display: none;
+    div[data-testid="stTabs"] [data-baseweb="tab-highlight-title"],
+    div[data-testid="stTabs"] [data-baseweb="tab-border"] {
+        display: none !important;
     }
 
-    /* 2. Main Submit Form Button */
+    /* =========================================================
+       2. ตัวเลือกประเภทสมาชิก (Radio Segmented Control)
+       ========================================================= */
+    div[data-testid="stRadio"] > div[role="radiogroup"] {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 8px !important;
+        background-color: #F5EFE6 !important;
+        padding: 6px !important;
+        border-radius: 18px !important;
+        border: 1px solid #EADBCE !important;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03) !important;
+    }
+
+    div[data-testid="stRadio"] label {
+        flex: 1 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        background: transparent !important;
+        padding: 8px 16px !important;
+        border-radius: 12px !important;
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        cursor: pointer !important;
+        border: none !important;
+        margin: 0 !important;
+    }
+
+    div[data-testid="stRadio"] label:hover {
+        background: rgba(255, 255, 255, 0.6) !important;
+        transform: translateY(-2px) !important;
+    }
+
+    div[data-testid="stRadio"] label[data-checked="true"] {
+        background: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+        font-weight: 700 !important;
+        color: #5C5248 !important;
+        transform: translateY(-1px) !important;
+    }
+
+    /* =========================================================
+       3. ปุ่มเพิ่ม-ลด Generation (+ / - Buttons)
+       ========================================================= */
+    div[data-testid="stNumberInput"] div[data-baseweb="input"] {
+        border-radius: 16px !important;
+        background-color: #FAFAFA !important;
+        border: 1.5px solid #EADBCE !important;
+        overflow: hidden !important;
+        transition: all 0.2s ease !important;
+    }
+
+    div[data-testid="stNumberInput"] div[data-baseweb="input"]:focus-within {
+        border-color: #FFB7B2 !important;
+        box-shadow: 0 0 0 3px rgba(255, 183, 178, 0.25) !important;
+    }
+
+    div[data-testid="stNumberInput"] button {
+        background-color: #FFF0F2 !important;
+        color: #E11D48 !important;
+        border: 1px solid #FFCCE1 !important;
+        border-radius: 12px !important;
+        margin: 3px !important;
+        width: 36px !important;
+        height: 36px !important;
+        font-weight: bold !important;
+        transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04) !important;
+    }
+
+    div[data-testid="stNumberInput"] button:hover {
+        background-color: #FFB7B2 !important;
+        color: #FFFFFF !important;
+        border-color: #FF9AA2 !important;
+        transform: scale(1.12) rotate(4deg) !important;
+        box-shadow: 0 4px 12px rgba(255, 154, 162, 0.45) !important;
+    }
+
+    div[data-testid="stNumberInput"] button:active {
+        transform: scale(0.92) !important;
+    }
+
+    /* =========================================================
+       4. Main Submit Form Button
+       ========================================================= */
     div[data-testid="stFormSubmitButton"] > button {
         background: linear-gradient(135deg, #FFB7B2 0%, #FF9AA2 100%) !important;
         color: #FFFFFF !important;
@@ -139,7 +227,9 @@ st.markdown("""
         box-shadow: 0 3px 10px rgba(255, 139, 148, 0.3) !important;
     }
 
-    /* 3. Modal / Dialog Buttons */
+    /* =========================================================
+       5. Modal / Dialog Buttons
+       ========================================================= */
     div[data-testid="stButton"] > button {
         border-radius: 14px !important;
         font-weight: 600 !important;
@@ -172,35 +262,9 @@ st.markdown("""
         box-shadow: 0 8px 22px rgba(255, 82, 82, 0.48) !important;
     }
 
-    /* 4. Radio Pill Toggle Switch */
-    div[data-testid="stRadio"] div[role="radiogroup"] {
-        gap: 8px;
-        background-color: #EFE9E0;
-        padding: 6px;
-        border-radius: 16px;
-        border: 1px solid #E5DEC9;
-    }
-
-    div[data-testid="stRadio"] label {
-        background: transparent;
-        padding: 8px 18px !important;
-        border-radius: 12px !important;
-        transition: all 0.25s ease !important;
-        cursor: pointer !important;
-    }
-
-    div[data-testid="stRadio"] label:hover {
-        background: rgba(255,255,255,0.6) !important;
-    }
-
-    div[data-testid="stRadio"] label[data-checked="true"] {
-        background: #FFFFFF !important;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06) !important;
-        font-weight: 600 !important;
-        color: #5C5248 !important;
-    }
-
-    /* 5. File Uploader Browse Button */
+    /* =========================================================
+       6. File Uploader Browse Button
+       ========================================================= */
     section[data-testid="stFileUploadDropzone"] button {
         background: linear-gradient(135deg, #BAE6FD 0%, #7DD3FC 100%) !important;
         color: #0369A1 !important;
@@ -217,21 +281,9 @@ st.markdown("""
         box-shadow: 0 6px 16px rgba(125, 211, 252, 0.6) !important;
     }
 
-    /* 6. Number Input Buttons */
-    div[data-testid="stNumberInput"] button {
-        background-color: #F4EFE6 !important;
-        border-radius: 10px !important;
-        transition: all 0.2s ease !important;
-        border: 1px solid #E5DEC9 !important;
-    }
-
-    div[data-testid="stNumberInput"] button:hover {
-        background-color: #FFDAC1 !important;
-        color: #8D2B44 !important;
-        transform: scale(1.1) !important;
-    }
-
-    /* CSS Pastel Tree Container */
+    /* =========================================================
+       7. CSS Pastel Tree Container
+       ========================================================= */
     .tree-container {
         display: flex;
         flex-direction: column;
@@ -328,8 +380,8 @@ PASTEL_PALETTE = [
 # ---------------------------------------------------------
 # 4. App Header & Data Fetching
 # ---------------------------------------------------------
-st.markdown("<div class='app-title'>My Fam Commu 🐾</div>", unsafe_allow_html=True)
-st.markdown("<div class='app-subtitle'>ผังครอบครัว 🌸🌼🩵</div>", unsafe_allow_html=True)
+st.markdown("<div class='app-title'>MyFamCommu 🐾</div>", unsafe_allow_html=True)
+st.markdown("<div class='app-subtitle'>แผนผังครอบครัว 🌸🌼🩵</div>", unsafe_allow_html=True)
 
 def fetch_members():
     try:
@@ -401,12 +453,12 @@ with tab1:
             '<div style="text-align: center; padding: 40px 20px; background-color: #FFFFFF; border: 2px solid #F3ECE1; border-radius: 24px; margin-top: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.02);">'
             '<p style="font-size: 2.5rem; margin-bottom: 8px;">🐱🌸🐶</p>'
             '<p style="color: #5C5248; font-weight: 600; font-size: 1.05rem; margin-bottom: 4px;">ยังไม่มีข้อมูลสมาชิกในบ้าน</p>'
-            '<p style="color: #A09385; font-size: 0.85rem; margin: 0;">กดที่แท็บ <b>"➕ เพิ่มสมาชิก"</b> ด้านบนเพื่อเริ่มเพิ่มสมาชิกคนแรกได้เลยครับ</p>'
+            '<p style="color: #A09385; font-size: 0.85rem; margin: 0;">กดที่แท็บ <b>"➕ เพิ่มสมาชิก"</b> เพื่อเริ่มการเพิ่มสมาชิก</p>'
             '</div>', 
             unsafe_allow_html=True
         )
     else:
-        st.markdown("<div class='section-title'>🏡 แผนผัง (คลิกที่รูปเพื่อดูรายละเอียด)</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-title'>🏡 แผนผังครอบครัว (คลิกที่รูปเพื่อดูรายละเอียด)</div>", unsafe_allow_html=True)
         
         if "selected_id" in st.query_params:
             sel_id = st.query_params["selected_id"]
@@ -436,7 +488,6 @@ with tab1:
                     icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
                     avatar_html = f'<div class="tree-avatar-placeholder" style="background-color: {theme["badge_bg"]}; {img_border_style}">{icon}</div>'
                 
-                # เขียน HTML แบบบรรทัดเดียวไม่ย่อหน้า ป้องกัน Markdown Code Block Error
                 node_html = f'<a href="?selected_id={m["id"]}" target="_self" class="tree-node-link"><div class="tree-node" style="{card_style}">{avatar_html}<div class="tree-node-name">{m["name"]}</div><div style="{badge_style}">Gen {m.get("gen_level", 0)}</div></div></a>'
                 tree_blocks.append(node_html)
             
@@ -502,7 +553,7 @@ with tab2:
         
         if submitted:
             if not name:
-                st.error("กรุณากรอกชื่อสมาชิกด้วยครับ")
+                st.error("กรุณากรอกชื่อสมาชิก")
             else:
                 try:
                     image_url = None
@@ -531,7 +582,7 @@ with tab2:
                     }
                     
                     supabase.table("members").insert(new_member).execute()
-                    st.success(f"บันทึก {name} เรียบร้อยแล้วครับ!")
+                    st.success(f"บันทึก {name} เรียบร้อย!")
                     st.rerun()
                 except Exception as e:
                     st.error(f"เกิดข้อผิดพลาด: {e}")
