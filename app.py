@@ -133,6 +133,7 @@ if menu == "🌳 ผังครอบครัว":
                     """
                     st.markdown(card_html, unsafe_allow_html=True)
                     
+                    # คลิกเปิดดูโปรไฟล์ และปุ่มลบข้อมูล
                     with st.expander(f"📖 ดูโปรไฟล์ของ {m['name']}"):
                         if m.get('image_url'):
                             st.image(m['image_url'], use_container_width=True)
@@ -142,6 +143,16 @@ if menu == "🌳 ผังครอบครัว":
                         if m.get('father') or m.get('mother'):
                             st.write(f"**สายเลือด:** พ่อ [{m.get('father', '-')}] | แม่ [{m.get('mother', '-')}]")
                         st.write(f"**บันทึกพัฒนาการ / โน้ต:** {m.get('notes') if m.get('notes') else '-'}")
+                        
+                        st.divider()
+                        # ปุ่มลบข้อมูลรายบุคคล
+                        if st.button(f"🗑️ ลบสมาชิก {m['name']}", key=f"delete_btn_{m['id']}", use_container_width=True):
+                            try:
+                                supabase.table("members").delete().eq("id", m["id"]).execute()
+                                st.success(f"ลบ {m['name']} เรียบร้อยแล้ว!")
+                                st.rerun() # รีเฟรชหน้าจอทันทีเพื่อตัดชื่อที่ลบออก
+                            except Exception as e:
+                                st.error(f"เกิดข้อผิดพลาดในการลบ: {e}")
 
 # ---------------------------------------------------------
 # หน้าที่ 2: ฟอร์มเพิ่มสมาชิกใหม่ (Dynamic Add Member Form)
@@ -211,6 +222,6 @@ elif menu == "➕ เพิ่มสมาชิกใหม่":
                     supabase.table("members").insert(new_member).execute()
                     st.success(f"บันทึกข้อมูล {name} เรียบร้อยแล้ว!")
                     st.balloons()
-                    st.rerun() # รีเฟรชหน้าจอทันทีเพื่อโหลดข้อมูลใหม่
+                    st.rerun()
                 except Exception as e:
                     st.error(f"เกิดข้อผิดพลาดในการบันทึก: {e}")
