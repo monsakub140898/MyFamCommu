@@ -1,6 +1,7 @@
 import streamlit as st
 from supabase import create_client, Client
 import uuid
+from datetime import datetime
 
 # ---------------------------------------------------------
 # 1. Page Configuration (Mobile-First)
@@ -29,12 +30,10 @@ supabase = init_supabase()
 # ---------------------------------------------------------
 st.markdown("""
 <style>
-    /* Hide Streamlit default headers/footers */
     header {visibility: hidden;}
     footer {visibility: hidden;}
     #MainMenu {visibility: hidden;}
     
-    /* Global Typography & Background */
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap');
     
     html, body, [class*="css"] {
@@ -50,7 +49,6 @@ st.markdown("""
         margin: 0 auto;
     }
 
-    /* Minimal Title Header */
     .app-title {
         font-size: 1.5rem;
         font-weight: 700;
@@ -68,7 +66,6 @@ st.markdown("""
         font-weight: 400;
     }
 
-    /* Minimal Gen Section Header */
     .gen-header {
         font-size: 0.72rem;
         font-weight: 600;
@@ -87,7 +84,6 @@ st.markdown("""
         background-color: #EFEFEA;
     }
 
-    /* Card Styling */
     .member-card {
         background: #FFFFFF;
         border: 1px solid #EAEAE6;
@@ -146,7 +142,6 @@ st.markdown("""
         margin-left: 6px;
     }
 
-    /* Streamlit Tab Customization */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
         background-color: #F4F4F0;
@@ -169,7 +164,6 @@ st.markdown("""
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
-    /* Form Submit Button (Terracotta Accent) */
     div[data-testid="stFormSubmitButton"] > button {
         background-color: #D97757 !important;
         color: #FFFFFF !important;
@@ -191,7 +185,6 @@ st.markdown("""
 st.markdown("<div class='app-title'>My Fam Commu</div>", unsafe_allow_html=True)
 st.markdown("<div class='app-subtitle'>Family Tree & Pet Records</div>", unsafe_allow_html=True)
 
-# Helper function
 def fetch_members():
     try:
         response = supabase.table("members").select("*").order("gen_level", desc=False).execute()
@@ -200,11 +193,10 @@ def fetch_members():
         st.error(f"ไม่สามารถเชื่อมต่อฐานข้อมูลได้: {e}")
         return []
 
-# Navigation Tabs
 tab1, tab2 = st.tabs(["🌳 ผังครอบครัว", "➕ เพิ่มสมาชิก"])
 
 # ---------------------------------------------------------
-# Tab 1: ผังครอบครัว (Minimal Family Tree)
+# Tab 1: ผังครอบครัว
 # ---------------------------------------------------------
 with tab1:
     data = fetch_members()
@@ -224,14 +216,12 @@ with tab1:
                 st.markdown(f"<div class='gen-header'>Generation {gen}</div>", unsafe_allow_html=True)
                 
                 for m in members_in_gen:
-                    # Avatar
                     if m.get('image_url'):
                         img_html = f"<img src='{m['image_url']}' class='avatar-img'>"
                     else:
                         icon = '🐱' if m['type'] == 'สัตว์เลี้ยง' else '👤'
                         img_html = f"<div class='avatar-placeholder'>{icon}</div>"
                     
-                    # Card
                     card_html = f"""
                     <div class="member-card">
                         {img_html}
@@ -246,12 +236,13 @@ with tab1:
                     """
                     st.markdown(card_html, unsafe_allow_html=True)
                     
-                    # Profile Detail & Delete
                     with st.expander(f"ข้อมูลของ {m['name']}"):
                         if m.get('image_url'):
                             st.image(m['image_url'], use_container_width=True)
                         st.write(f"**ประเภท:** {m['type']} ({m['species']})")
                         st.write(f"**เพศ:** {m['gender']} | **รุ่น:** Gen {m['gen_level']}")
+                        if m.get('birth_date'):
+                            st.write(f"**วันเกิด:** {m['birth_date']}")
                         if m.get('father') or m.get('mother'):
                             st.write(f"**พ่อ-แม่:** {m.get('father', '-')} / {m.get('mother', '-')}")
                         if m.get('notes'):
@@ -267,7 +258,7 @@ with tab1:
                                 st.error(f"เกิดข้อผิดพลาด: {e}")
 
 # ---------------------------------------------------------
-# Tab 2: เพิ่มสมาชิกใหม่ (Clean Form)
+# Tab 2: เพิ่มสมาชิกใหม่ (มีช่องปฏิทินเลือกวันเกิด)
 # ---------------------------------------------------------
 with tab2:
     st.markdown("<p style='font-size: 0.9rem; color: #706F6C; margin-bottom: 1rem;'>กรอกรายละเอียดเพื่อบันทึกสมาชิกเข้าสู่ระบบ</p>", unsafe_allow_html=True)
@@ -288,6 +279,15 @@ with tab2:
             gender = st.selectbox("เพศ", ["ผู้", "เมีย"])
             
         gen_level = st.number_input("Generation (0, 1, 2...)", min_value=0, max_value=10, value=0)
+        
+        # เพิ่มช่องเลือกวันเกิด (แสดงปฏิทินให้จิ้มเลือกได้ง่าย)
+        birth_date = st.date_input(
+            "วัน/เดือน/ปี เกิด", 
+            value=None, 
+            min_value=datetime(1900, 1, 1), 
+            max_value=datetime.now(),
+            format="DD/MM/YYYY"
+        )
         
         col_f, col_m = st.columns(2)
         with col_f:
@@ -323,6 +323,7 @@ with tab2:
                         "species": species,
                         "gender": gender,
                         "gen_level": int(gen_level),
+                        "birth_date": birth_date.strftime("%Y-%m-%d") if birth_date else None,
                         "father": father if father != "- ไม่ระบุ -" else None,
                         "mother": mother if mother != "- ไม่ระบุ -" else None,
                         "notes": notes,
