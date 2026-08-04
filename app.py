@@ -228,9 +228,7 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
     else:
-        # ---------------------------------------------------------
-        # 1. แสดงแผนผังสายเลือดแบบ Visual CSS Tree (รวบเป็น Compact HTML)
-        # ---------------------------------------------------------
+        # 1. แสดงแผนผังสายเลือดแบบ Visual CSS Tree
         st.markdown("<div class='section-title'>แผนผังสายเลือด (FAMILY TREE)</div>", unsafe_allow_html=True)
         
         unique_gens = sorted(list(set(m.get('gen_level', 0) for m in data)))
@@ -250,21 +248,17 @@ with tab1:
                     icon = '🐱' if m.get('type') == 'สัตว์เลี้ยง' else '👤'
                     avatar_html = f"<div class='tree-avatar-placeholder'>{icon}</div>"
                 
-                # เขียนแบบบรรทัดเดียว ป้องกัน Streamlit ตีความการเว้นวรรคผิดเป็น Code Block
                 tree_blocks.append(f"<div class='tree-node'>{avatar_html}<div class='tree-node-name'>{m['name']}</div><div class='tree-node-sub'>Gen {m.get('gen_level', 0)}</div></div>")
             
             tree_blocks.append("</div>")
         tree_blocks.append("</div>")
         
-        # รวมเป็น HTML String แบบไม่มีขึ้นบรรทัดใหม่
         full_tree_html = "".join(tree_blocks)
         st.markdown(full_tree_html, unsafe_allow_html=True)
         
         st.divider()
 
-        # ---------------------------------------------------------
         # 2. รายชื่อสมาชิกทั้งหมด (คลิกแถบชื่อเพื่อดูข้อมูล/ลบข้อมูล)
-        # ---------------------------------------------------------
         st.markdown("<div class='section-title'>รายชื่อสมาชิกทั้งหมด</div>", unsafe_allow_html=True)
         
         for gen in unique_gens:
@@ -291,7 +285,6 @@ with tab1:
                     
                     if st.button(f"🗑️ ลบ {m['name']}", key=f"del_{m['id']}", use_container_width=True):
                         try:
-                            # 1. ลบรูปถ่ายออกจาก Storage (ถ้ามี)
                             if m.get('image_url'):
                                 try:
                                     file_name = m['image_url'].split('/')[-1]
@@ -299,7 +292,6 @@ with tab1:
                                 except Exception as img_err:
                                     st.warning(f"ลบรูปภาพไม่สำเร็จ: {img_err}")
                             
-                            # 2. ลบข้อมูลจากฐานข้อมูล
                             supabase.table("members").delete().eq("id", m["id"]).execute()
                             st.success(f"ลบ {m['name']} และรูปภาพเรียบร้อยแล้ว")
                             st.rerun()
@@ -317,15 +309,21 @@ with tab2:
     
     existing_members = fetch_members()
     
-    father_options = ["- ไม่ระบุ -"] + [
-        m["name"] for m in existing_members 
-        if m.get("gender") in ["ชาย", "ผู้"] and m.get("gen_level", 0) < gen_level
-    ]
+    # 🎯 ตัวกรองพ่อ-แม่: จะดึงเฉพาะสมาชิกที่อยู่ใน Gen ก่อนหน้าตรงๆ 1 รุ่น เท่านั้น
+    parent_target_gen = gen_level - 1
     
-    mother_options = ["- ไม่ระบุ -"] + [
-        m["name"] for m in existing_members 
-        if m.get("gender") in ["หญิง", "เมีย"] and m.get("gen_level", 0) < gen_level
-    ]
+    if gen_level > 0:
+        father_options = ["- ไม่ระบุ -"] + [
+            m["name"] for m in existing_members 
+            if m.get("gender") in ["ชาย", "ผู้"] and m.get("gen_level", 0) == parent_target_gen
+        ]
+        mother_options = ["- ไม่ระบุ -"] + [
+            m["name"] for m in existing_members 
+            if m.get("gender") in ["หญิง", "เมีย"] and m.get("gen_level", 0) == parent_target_gen
+        ]
+    else:
+        father_options = ["- ไม่ระบุ -"]
+        mother_options = ["- ไม่ระบุ -"]
     
     with st.form("add_member_form", clear_on_submit=True):
         name = st.text_input("ชื่อสมาชิก*")
@@ -347,9 +345,9 @@ with tab2:
         
         col_f, col_m = st.columns(2)
         with col_f:
-            father = st.selectbox("เลือกพ่อ", father_options)
+            father = st.selectbox(f"เลือกพ่อ (จาก Gen {parent_target_gen})" if gen_level > 0 else "เลือกพ่อ", father_options)
         with col_m:
-            mother = st.selectbox("เลือกแม่", mother_options)
+            mother = st.selectbox(f"เลือกแม่ (จาก Gen {parent_target_gen})" if gen_level > 0 else "เลือกแม่", mother_options)
             
         notes = st.text_area("บันทึกเพิ่มเติม / พัฒนาการ", placeholder="ใส่บันทึกย่อหรือลักษณะเด่น...")
         uploaded_file = st.file_uploader("📸 รูปถ่ายสมาชิก", type=["jpg", "png", "jpeg"])
