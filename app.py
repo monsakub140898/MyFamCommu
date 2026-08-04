@@ -425,7 +425,7 @@ def render_member_dialog(m):
                     <div style='font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 6px;'>
                         <div><b>ชื่อ :</b> {pem['name']}</div>
                         <div><b>ประเภท :</b> {pem['type']} ({pem['species']})</div>
-                        <div><b>เพศ :</b> {pem['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {pem['gen_level']}</div>
+                        <div><b>เพศ :</b> {pem['gender']} &nbsp;|&nbsp; <b>รุ่น :</b> Gen {pem['gen_level']}</div>
                         <div><b>วันเกิด :</b> {pem['birth_date'] if pem['birth_date'] else '-'}</div>
                         <div><b>พ่อ / แม่ :</b> {pem['father'] if pem['father'] else '-'} / {pem['mother'] if pem['mother'] else '-'}</div>
                         <div><b>บันทึกเพิ่มเติม :</b> {pem['notes'] if pem['notes'] else '-'}</div>
@@ -625,7 +625,7 @@ def render_member_dialog(m):
                 <div style='background: #FFFFFF; border: 1.5px solid #EADBCE; padding: 16px; border-radius: 16px; font-size: 0.9rem; color: #4A443F; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);'>
                     <div style='font-size: 1.2rem; font-weight: 700; color: #4A443F; margin-bottom: 4px; border-bottom: 1px solid #F3ECE1; padding-bottom: 8px;'>{m['name']}</div>
                     <div><b>ประเภท :</b> {type_display}</div>
-                    <div><b>เพศ :</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น:</b> Gen {m.get('gen_level', 1)}</div>
+                    <div><b>เพศ :</b> {m['gender']} &nbsp;|&nbsp; <b>รุ่น :</b> Gen {m.get('gen_level', 1)}</div>
                     {birth_date_html}
                     {parents_html}
                     {notes_html}
